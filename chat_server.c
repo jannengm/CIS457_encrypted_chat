@@ -2,18 +2,7 @@
  *
  ******************************************************************************/
 
-#include <unistd.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-
-#define MAX_CLIENTS 100
-#define BUFF_SIZE 2048
-#define LINE_SIZE 2048
+#include "tcp_chat.h"
 
 struct client_t{
     int id;
@@ -23,6 +12,7 @@ struct client_t{
 typedef struct client_t client_t;
 
 int handle_client( int fd, client_t * clients, int num_clients );
+//int check_command(const char * msg, int * target);
 
 int main(int argc, char ** argv){
     int sockfd, new_sock, i, num_clients = 0;
@@ -95,25 +85,44 @@ int main(int argc, char ** argv){
                     client_list[num_clients].fd = new_sock;
                     num_clients++;
 
-                    int j;
-                    for(j = 0; j < num_clients; j++){
-                        printf("Client #%d is on socket %d\n", client_list[j].id,
-                               client_list[j].fd);
-                    }
+//                    int j;
+//                    for(j = 0; j < num_clients; j++){
+//                        printf("Client #%d is on socket %d\n", client_list[j].id,
+//                               client_list[j].fd);
+//                    }
                 }
 
                 /*If client is connected but not on master socket,
                  *it is ready for use*/
                 else{
-                    handle_client(i, client_list, num_clients);
-                    /*If exit code of handle_client is CLIENT_DISCONNECT,
-                    *the client has disconnected. Close client socket and
-                    *remove it from the active_fd_set*/
-//                    if( handle_client(i) == 0 ){
-//                        printf("Closing client socket\n");
-//                        close(i);
-//                        FD_CLR(i, &active_set);
-//                    }
+                    int command = handle_client(i, client_list, num_clients);
+
+                    /*If !exit received, disconnect the client*/
+                    if(command == EXIT){
+                        close(i);
+                        FD_CLR(i, &active_set);
+                        int k;
+                        for(k = 0; k < num_clients; k++){
+                            if(client_list[k].fd == i){
+                                client_list[k].fd = -1;
+                                client_list[k].id = -1;
+                            }
+                        }
+                    }
+
+                    /*If !shutdown received, disconnect all clients and exit*/
+                    if(command == SHUTDOWN){
+                        int m;
+                        char * tmp = "!exit";
+                        for(m = 0; m < num_clients; m++){
+                            if( client_list[m].fd > 0 ){
+                                send(client_list[m].fd, tmp, 5, 0);
+                                close(client_list[m].fd);
+                                FD_CLR(client_list[m].fd, &active_set);
+                            }
+                        }
+                        exit(0);
+                    }
                 }
             }
         }
@@ -122,20 +131,75 @@ int main(int argc, char ** argv){
 }
 
 int handle_client( int fd, client_t * clients, int num_clients ){
-    char /*buffer[BUFF_SIZE],*/ line[LINE_SIZE];
+    char buffer[BUFF_SIZE], line[LINE_SIZE];
     //int buff_len, file_size;
+    int command, target;
 
     /*Clear the input buffer*/
     memset(line, 0, LINE_SIZE);
+    memset(buffer, 0, BUFF_SIZE);
 
     /*Get file name from client*/
-    recv(fd, line, LINE_SIZE, 0);
+    recv(fd, buffer, BUFF_SIZE, 0);
 
-    printf("Got from client:\n,%s\n", line);
+    printf("Got from client:\n%s\n", buffer);
 
-    int i;
-    for(i = 0; i < num_clients; i++){
-        
+    command = check_command(buffer, &target);
+
+    if(command == EXIT){
+        //remove this client from list
+        return EXIT;
+    }
+    if(command == KILL){
+        //send !exit to specified client
+        return KILL;
+    }
+    if(command == SHUTDOWN){
+        //Disconnect all clients, shut down server
+        return SHUTDOWN;
+    }
+    if(command == LIST){
+        //send list to requesting client
+        return LIST;
+    }
+    if(command == TARGET) {
+        /*Remove target tag*/
+        int i;
+        char *msg_ptr = NULL;
+        for(i = 0; i < strlen(buffer); i++){
+            if( isalpha(buffer[i]) ){
+                msg_ptr = buffer + i;
+                break;
+            }
+        }
+
+        if(msg_ptr != NULL){
+            strncpy(line, msg_ptr, LINE_SIZE);
+        }
+        else{
+            return TARGET;
+        }
+
+        /*If target is BROADCAST, broadcast to all clients*/
+        if (target == BROADCAST) {
+            int j;
+            for (j = 0; j < num_clients; j++) {
+                if (clients[j].fd != fd && clients[j].fd > 0) {
+                    send(clients[j].fd, line, strlen(line), 0);
+                }
+            }
+        }
+        /*Else send to the specified target*/
+        else{
+            int k;
+            for (k = 0; k < num_clients; k++) {
+                if (clients[k].id == target) {
+                    send(clients[k].fd, line, strlen(line), 0);
+                }
+            }
+        }
+
+        return TARGET;
     }
 
     return 0;

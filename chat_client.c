@@ -2,23 +2,14 @@
 // Created by jannengm on 11/3/16.
 //
 
-#include <unistd.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <pthread.h>
-
-#define BUFF_SIZE 4096
-#define LINE_SIZE 4096
+#include "tcp_chat.h"
 
 void * get_input (void * arg);
+//int check_command(const char * msg, int * target);
 
 int main( int argc, char * argv[] ) {
-    char buffer[BUFF_SIZE], input[LINE_SIZE], msg[LINE_SIZE];
-    int err, sockfd, flag, buff_len, file_size, i;
+    char /*buffer[BUFF_SIZE], input[LINE_SIZE],*/ msg[LINE_SIZE];
+    int err, sockfd/*, i*/;
     struct sockaddr_in serveraddr;
     pthread_t child;
 
@@ -61,37 +52,65 @@ int main( int argc, char * argv[] ) {
         /*Get message from server*/
         recv(sockfd, msg, LINE_SIZE, 0);
 
-        printf("Got from client:\n,%s\n", msg);
+        /*Check for commands*/
+        int command = check_command(msg, NULL);
 
-        /*Get user input*/
-//        printf("Enter message: ");
-//        fgets(input, LINE_SIZE, stdin);
-//        input[strlen(input) - 1] = 0;
-//
-//        /*If no error, send requested file name to server*/
-//        send(sockfd, input, strlen( input ), 0);
+        /*If !exit command was received, shut down gracefully*/
+        if(command == EXIT){
+            close(sockfd);
+            printf("Received exit command. Disconnecting...\n");
+            exit(0);
+        }
 
+        printf("Got from server:\n%s\n", msg);
     }
 }
 
 void * get_input (void * arg){
     int sockfd = *(int *)arg;
-    char to_send[LINE_SIZE];
+    int target = -1;
+    char buffer[LINE_SIZE], to_send[LINE_SIZE];
 
     memset(to_send, 0, LINE_SIZE);
+    memset(buffer, 0, LINE_SIZE);
 
     /*Get input, send to server*/
     while(strcmp(to_send, "!exit") != 0){
-        fgets(to_send, LINE_SIZE, stdin);
-        to_send[strlen(to_send) - 1] = 0;
+        fgets(buffer, LINE_SIZE, stdin);
+        buffer[strlen(buffer) - 1] = 0;
+
+        printf("Got from input: %s\n", buffer);
+
+        /*Check for commands*/
+        int command = check_command(buffer, &target);
+
+        /*If invalid command entered, do not send*/
+        if(command < 0){
+            memset(buffer, 0, LINE_SIZE);
+            continue;
+        }
+
+        /*If no target specified, add current target*/
+        if(command == NO_CODE){
+            //Could cause buffer overflow, fix later
+            snprintf(to_send, LINE_SIZE, "@%d %s", target, buffer);
+        }
+        else{
+            strncpy(to_send, buffer, LINE_SIZE);
+        }
+
+        printf("Sending to server: %s\n", to_send);
         send(sockfd, to_send, strlen(to_send), 0);
 
         /*If command is !exit, disconnect*/
-        if( strcmp(to_send, "!exit") == 0 ){
-            printf("quitting server\n");
+        if(command == EXIT){
+            close(sockfd);
+            printf("Received exit command. Disconnecting...\n");
             break;
         }
 
+        /*Clear line and buffer for next message*/
+        memset(buffer, 0, LINE_SIZE);
         memset(to_send, 0, LINE_SIZE);
     }
     close(sockfd);
