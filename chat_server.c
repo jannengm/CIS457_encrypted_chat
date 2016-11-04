@@ -12,20 +12,24 @@
 #include <netinet/in.h>
 
 #define MAX_CLIENTS 100
+#define BUFF_SIZE 2048
+#define LINE_SIZE 2048
 
 struct client_t{
     int id;
     int fd;
 };
 
-int handle_client( int fd );
+typedef struct client_t client_t;
+
+int handle_client( int fd, client_t * clients, int num_clients );
 
 int main(int argc, char ** argv){
     int sockfd, new_sock, i, num_clients = 0;
     fd_set active_set, read_set;
     socklen_t len;
     struct sockaddr_in serveraddr, clientaddr;
-    struct client_t client_list[MAX_CLIENTS];
+    client_t client_list[MAX_CLIENTS];
 
     for(i = 0; i < MAX_CLIENTS; i++){
         client_list[i].id = -1;
@@ -91,7 +95,8 @@ int main(int argc, char ** argv){
                     client_list[num_clients].fd = new_sock;
                     num_clients++;
 
-                    for(int j = 0; j < num_clients; j++){
+                    int j;
+                    for(j = 0; j < num_clients; j++){
                         printf("Client #%d is on socket %d\n", client_list[j].id,
                                client_list[j].fd);
                     }
@@ -100,7 +105,7 @@ int main(int argc, char ** argv){
                 /*If client is connected but not on master socket,
                  *it is ready for use*/
                 else{
-
+                    handle_client(i, client_list, num_clients);
                     /*If exit code of handle_client is CLIENT_DISCONNECT,
                     *the client has disconnected. Close client socket and
                     *remove it from the active_fd_set*/
@@ -116,6 +121,22 @@ int main(int argc, char ** argv){
     return 0;
 }
 
-int handle_client( int fd ){
+int handle_client( int fd, client_t * clients, int num_clients ){
+    char /*buffer[BUFF_SIZE],*/ line[LINE_SIZE];
+    //int buff_len, file_size;
+
+    /*Clear the input buffer*/
+    memset(line, 0, LINE_SIZE);
+
+    /*Get file name from client*/
+    recv(fd, line, LINE_SIZE, 0);
+
+    printf("Got from client:\n,%s\n", line);
+
+    int i;
+    for(i = 0; i < num_clients; i++){
+        
+    }
+
     return 0;
 }

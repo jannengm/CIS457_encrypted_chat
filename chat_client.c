@@ -9,15 +9,18 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <pthread.h>
 
 #define BUFF_SIZE 4096
 #define LINE_SIZE 4096
 
+void * get_input (void * arg);
+
 int main( int argc, char * argv[] ) {
-    char buffer[BUFF_SIZE], in_file[LINE_SIZE], out_file[LINE_SIZE];
+    char buffer[BUFF_SIZE], input[LINE_SIZE], msg[LINE_SIZE];
     int err, sockfd, flag, buff_len, file_size, i;
     struct sockaddr_in serveraddr;
-    FILE *fp;
+    pthread_t child;
 
     /*Create socket*/
     sockfd = socket(AF_INET, SOCK_STREAM, 0);
@@ -36,7 +39,7 @@ int main( int argc, char * argv[] ) {
 
     /*Get server port number*/
     serveraddr.sin_family = AF_INET;
-    serveraddr.sin_port = htons(atoi(argv[1]));
+    serveraddr.sin_port = htons( (uint16_t)atoi(argv[1]) );
     serveraddr.sin_addr.s_addr = inet_addr(argv[2]);
 
     /*Connect to server*/
@@ -45,4 +48,52 @@ int main( int argc, char * argv[] ) {
         printf("There was an error with connecting\n");
         exit(1);
     }
+
+    if( pthread_create(&child, NULL, get_input, &sockfd) != 0) {
+        printf("Failed to create thread\n");
+        return 1;
+    }
+    pthread_detach(child);
+
+    while(1){
+        memset(msg, 0, LINE_SIZE);
+
+        /*Get message from server*/
+        recv(sockfd, msg, LINE_SIZE, 0);
+
+        printf("Got from client:\n,%s\n", msg);
+
+        /*Get user input*/
+//        printf("Enter message: ");
+//        fgets(input, LINE_SIZE, stdin);
+//        input[strlen(input) - 1] = 0;
+//
+//        /*If no error, send requested file name to server*/
+//        send(sockfd, input, strlen( input ), 0);
+
+    }
+}
+
+void * get_input (void * arg){
+    int sockfd = *(int *)arg;
+    char to_send[LINE_SIZE];
+
+    memset(to_send, 0, LINE_SIZE);
+
+    /*Get input, send to server*/
+    while(strcmp(to_send, "!exit") != 0){
+        fgets(to_send, LINE_SIZE, stdin);
+        to_send[strlen(to_send) - 1] = 0;
+        send(sockfd, to_send, strlen(to_send), 0);
+
+        /*If command is !exit, disconnect*/
+        if( strcmp(to_send, "!exit") == 0 ){
+            printf("quitting server\n");
+            break;
+        }
+
+        memset(to_send, 0, LINE_SIZE);
+    }
+    close(sockfd);
+    exit(0);
 }
