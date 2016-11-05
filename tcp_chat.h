@@ -37,6 +37,6 @@
 #include <pthread.h>
 #include <ctype.h>
 
-int check_command(const char * msg, int * target);
+int check_command(char * msg, int * target);
 
 #endif //CIS457_ENCRYPTED_CHAT_TCP_CHAT_H

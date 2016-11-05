@@ -4,7 +4,7 @@
 
 #include "tcp_chat.h"
 
-int check_command(const char * msg, int * target){
+int check_command(char * msg, int * target){
 
     /*Check target to prevent segfaults when not needed*/
     if (target == NULL){
@@ -38,7 +38,14 @@ int check_command(const char * msg, int * target){
 
         /*If message starts with '@' set target*/
     else if(msg[0] == '@'){
-        if( strncmp(msg, "@all", 4) == 0 || strncmp(msg, "@-1", 3) == 0){
+        if( strncmp(msg, "@all", 4) == 0 ){
+            msg[1] = '-';
+            msg[2] = '1';
+            msg[3] = ' ';
+            *target = BROADCAST;
+            return TARGET;
+        }
+        if( strncmp(msg, "@-1", 3) == 0 ){
             *target = BROADCAST;
             return TARGET;
         }

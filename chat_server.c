@@ -11,7 +11,7 @@ struct client_t{
 
 typedef struct client_t client_t;
 
-int handle_client( int fd, client_t * clients, int num_clients );
+int handle_client( int fd, client_t * clients, int num_clients, fd_set * active_set );
 //int check_command(const char * msg, int * target);
 
 int main(int argc, char ** argv){
@@ -77,7 +77,8 @@ int main(int argc, char ** argv){
                         fprintf(stderr, "Error connecting to client\n");
                         exit(1);
                     }
-                    printf("Successfully connected to client on socket %d\n", new_sock);
+                    printf("Successfully connected to client #%d on socket"
+                                   "%d\n", num_clients, new_sock);
                     FD_SET (new_sock, &active_set);
 
                     /*Add the new client to the client list*/
@@ -95,7 +96,7 @@ int main(int argc, char ** argv){
                 /*If client is connected but not on master socket,
                  *it is ready for use*/
                 else{
-                    int command = handle_client(i, client_list, num_clients);
+                    int command = handle_client(i, client_list, num_clients, &active_set);
 
                     /*If !exit received, disconnect the client*/
                     if(command == EXIT){
@@ -113,10 +114,10 @@ int main(int argc, char ** argv){
                     /*If !shutdown received, disconnect all clients and exit*/
                     if(command == SHUTDOWN){
                         int m;
-                        char * tmp = "!exit";
+//                        char * tmp = "!exit";
                         for(m = 0; m < num_clients; m++){
                             if( client_list[m].fd > 0 ){
-                                send(client_list[m].fd, tmp, 5, 0);
+                                send(client_list[m].fd, "!exit", 5, 0);
                                 close(client_list[m].fd);
                                 FD_CLR(client_list[m].fd, &active_set);
                             }
@@ -130,7 +131,7 @@ int main(int argc, char ** argv){
     return 0;
 }
 
-int handle_client( int fd, client_t * clients, int num_clients ){
+int handle_client( int fd, client_t * clients, int num_clients, fd_set * active_set ){
     char buffer[BUFF_SIZE], line[LINE_SIZE];
     //int buff_len, file_size;
     int command, target;
@@ -152,6 +153,15 @@ int handle_client( int fd, client_t * clients, int num_clients ){
     }
     if(command == KILL){
         //send !exit to specified client
+        sscanf(buffer, "%s %d", line, &target);
+        int i;
+        for(i = 0; i < num_clients; i++){
+            if(clients[i].id == target){
+                send(clients[i].fd, "!exit", 5, 0);
+                close(clients[i].fd);
+                FD_CLR(clients[i].fd, active_set);
+            }
+        }
         return KILL;
     }
     if(command == SHUTDOWN){

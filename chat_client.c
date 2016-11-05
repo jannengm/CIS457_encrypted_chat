@@ -79,7 +79,7 @@ void * get_input (void * arg){
         fgets(buffer, LINE_SIZE, stdin);
         buffer[strlen(buffer) - 1] = 0;
 
-        printf("Got from input: %s\n", buffer);
+//        printf("Got from input: %s\n", buffer);
 
         /*Check for commands*/
         int command = check_command(buffer, &target);
@@ -99,7 +99,7 @@ void * get_input (void * arg){
             strncpy(to_send, buffer, LINE_SIZE);
         }
 
-        printf("Sending to server: %s\n", to_send);
+//        printf("Sending to server: %s\n", to_send);
         send(sockfd, to_send, strlen(to_send), 0);
 
         /*If command is !exit, disconnect*/
