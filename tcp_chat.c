@@ -49,23 +49,34 @@ int check_command(char * msg, int * target){
             *target = BROADCAST;
             return TARGET;
         }
-        char target_id[MAX_ID_LEN];
-        int i, j = 0;
-        for(i = 1; i < MAX_ID_LEN; i++){
-            if( isdigit(msg[i]) ){
-                target_id[j++] = msg[i];
-            }
-        }
-        if(j <= 0){
+        int tmp;
+        if( sscanf(msg + 1, "%d", &tmp) <= 0){
             //Invalid target
             fprintf(stderr, "Invalid target. Syntax is:\n");
             fprintf(stderr, "@[target id #] or @all\n");
             return INVALID_TARGET;
         }
         else{
-            *target = atoi(target_id);
+            *target = tmp;
             return TARGET;
         }
+//        char target_id[MAX_ID_LEN];
+//        int i, j = 0;
+//        for(i = 1; i < MAX_ID_LEN; i++){
+//            if( isdigit(msg[i]) ){
+//                target_id[j++] = msg[i];
+//            }
+//        }
+//        if(j <= 0){
+//            //Invalid target
+//            fprintf(stderr, "Invalid target. Syntax is:\n");
+//            fprintf(stderr, "@[target id #] or @all\n");
+//            return INVALID_TARGET;
+//        }
+//        else{
+//            *target = atoi(target_id);
+//            return TARGET;
+//        }
     }
 
         /*Else there is no command, only text*/

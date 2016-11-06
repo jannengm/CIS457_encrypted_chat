@@ -3,5 +3,5 @@ project(CIS457_encrypted_chat)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c99")
 
-set(SOURCE_FILES chat_server.c tcp_chat.h tcp_chat.c)
+set(SOURCE_FILES chat_server.c tcp_chat.h tcp_chat.c client_list.c client_list.h)
 add_executable(CIS457_encrypted_chat ${SOURCE_FILES})

@@ -5,11 +5,12 @@
 #include "tcp_chat.h"
 
 void * get_input (void * arg);
-//int check_command(const char * msg, int * target);
+
+int id;
 
 int main( int argc, char * argv[] ) {
-    char /*buffer[BUFF_SIZE], input[LINE_SIZE],*/ msg[LINE_SIZE];
-    int err, sockfd/*, i*/;
+    char msg[LINE_SIZE];
+    int err, sockfd;
     struct sockaddr_in serveraddr;
     pthread_t child;
 
@@ -40,6 +41,8 @@ int main( int argc, char * argv[] ) {
         exit(1);
     }
 
+    recv(sockfd, &id, sizeof(int), 0);
+
     if( pthread_create(&child, NULL, get_input, &sockfd) != 0) {
         printf("Failed to create thread\n");
         return 1;
@@ -62,7 +65,8 @@ int main( int argc, char * argv[] ) {
             exit(0);
         }
 
-        printf("Got from server:\n%s\n", msg);
+        printf("\n%s\nClient #%d>", msg, id);
+        fflush(stdout);
     }
 }
 
@@ -76,10 +80,9 @@ void * get_input (void * arg){
 
     /*Get input, send to server*/
     while(strcmp(to_send, "!exit") != 0){
+        printf("Client #%d>", id);
         fgets(buffer, LINE_SIZE, stdin);
         buffer[strlen(buffer) - 1] = 0;
-
-//        printf("Got from input: %s\n", buffer);
 
         /*Check for commands*/
         int command = check_command(buffer, &target);
@@ -99,7 +102,6 @@ void * get_input (void * arg){
             strncpy(to_send, buffer, LINE_SIZE);
         }
 
-//        printf("Sending to server: %s\n", to_send);
         send(sockfd, to_send, strlen(to_send), 0);
 
         /*If command is !exit, disconnect*/

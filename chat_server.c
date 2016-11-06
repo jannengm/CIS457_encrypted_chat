@@ -3,28 +3,20 @@
  ******************************************************************************/
 
 #include "tcp_chat.h"
+#include "client_list.h"
 
-struct client_t{
-    int id;
-    int fd;
-};
+int handle_client( client_t *sender, client_list_t *clients, fd_set *active_set );
 
-typedef struct client_t client_t;
-
-int handle_client( int fd, client_t * clients, int num_clients, fd_set * active_set );
-//int check_command(const char * msg, int * target);
-
-int main(int argc, char ** argv){
+int main(int argc, char **argv){
     int sockfd, new_sock, i, num_clients = 0;
     fd_set active_set, read_set;
     socklen_t len;
     struct sockaddr_in serveraddr, clientaddr;
-    client_t client_list[MAX_CLIENTS];
+    client_list_t client_list;
+    client_t client;
+    client_node_t * node;
 
-    for(i = 0; i < MAX_CLIENTS; i++){
-        client_list[i].id = -1;
-        client_list[i].fd = -1;
-    }
+    init_list(&client_list);
 
     /*Check for command line arguments*/
     if( argc < 2 ){
@@ -78,70 +70,56 @@ int main(int argc, char ** argv){
                         exit(1);
                     }
                     printf("Successfully connected to client #%d on socket"
-                                   "%d\n", num_clients, new_sock);
+                                   " %d\n", num_clients, new_sock);
                     FD_SET (new_sock, &active_set);
 
                     /*Add the new client to the client list*/
-                    client_list[num_clients].id = num_clients;
-                    client_list[num_clients].fd = new_sock;
-                    num_clients++;
+                    client.id = num_clients++;
+                    client.fd = new_sock;
+                    node = init_node(&client);
+                    push_back(&client_list, node);
 
-//                    int j;
-//                    for(j = 0; j < num_clients; j++){
-//                        printf("Client #%d is on socket %d\n", client_list[j].id,
-//                               client_list[j].fd);
-//                    }
+                    /*Send assigned Client ID# to new client*/
+                    send(new_sock, &client.id, sizeof(int), 0);
                 }
 
                 /*If client is connected but not on master socket,
                  *it is ready for use*/
                 else{
-                    int command = handle_client(i, client_list, num_clients, &active_set);
+                    client = find_client_fd(&client_list, i)->data;
+                    int command = handle_client(&client, &client_list, &active_set);
 
                     /*If !exit received, disconnect the client*/
                     if(command == EXIT){
-                        close(i);
+                        disconnect_client(&client_list, client.id);
                         FD_CLR(i, &active_set);
-                        int k;
-                        for(k = 0; k < num_clients; k++){
-                            if(client_list[k].fd == i){
-                                client_list[k].fd = -1;
-                                client_list[k].id = -1;
-                            }
-                        }
                     }
 
                     /*If !shutdown received, disconnect all clients and exit*/
                     if(command == SHUTDOWN){
-                        int m;
-//                        char * tmp = "!exit";
-                        for(m = 0; m < num_clients; m++){
-                            if( client_list[m].fd > 0 ){
-                                send(client_list[m].fd, "!exit", 5, 0);
-                                close(client_list[m].fd);
-                                FD_CLR(client_list[m].fd, &active_set);
-                            }
-                        }
+                        client.id = BROADCAST;
+                        send_to_target(&client_list, &client, BROADCAST, "!exit");
+                        free_list(&client_list);
+                        FD_ZERO (&active_set);
                         exit(0);
                     }
                 }
             }
         }
     }
-    return 0;
 }
 
-int handle_client( int fd, client_t * clients, int num_clients, fd_set * active_set ){
+int handle_client( client_t *sender, client_list_t *clients, fd_set *active_set ){
     char buffer[BUFF_SIZE], line[LINE_SIZE];
     //int buff_len, file_size;
-    int command, target;
+    int command, target, to_clear;
 
     /*Clear the input buffer*/
     memset(line, 0, LINE_SIZE);
     memset(buffer, 0, BUFF_SIZE);
 
     /*Get file name from client*/
-    recv(fd, buffer, BUFF_SIZE, 0);
+    recv(sender->fd, buffer, BUFF_SIZE, 0);
 
     printf("Got from client:\n%s\n", buffer);
 
@@ -154,14 +132,10 @@ int handle_client( int fd, client_t * clients, int num_clients, fd_set * active_
     if(command == KILL){
         //send !exit to specified client
         sscanf(buffer, "%s %d", line, &target);
-        int i;
-        for(i = 0; i < num_clients; i++){
-            if(clients[i].id == target){
-                send(clients[i].fd, "!exit", 5, 0);
-                close(clients[i].fd);
-                FD_CLR(clients[i].fd, active_set);
-            }
-        }
+        send_to_target(clients, sender, target, "!exit");
+        to_clear = find_client_id(clients, target)->data.fd;
+        disconnect_client(clients, target);
+        FD_CLR(to_clear, active_set);
         return KILL;
     }
     if(command == SHUTDOWN){
@@ -170,6 +144,10 @@ int handle_client( int fd, client_t * clients, int num_clients, fd_set * active_
     }
     if(command == LIST){
         //send list to requesting client
+        to_string(clients, line, LINE_SIZE);
+        client_t server;
+        server.id = BROADCAST;
+        send_to_target(clients, &server, sender->id, line);
         return LIST;
     }
     if(command == TARGET) {
@@ -185,32 +163,11 @@ int handle_client( int fd, client_t * clients, int num_clients, fd_set * active_
 
         if(msg_ptr != NULL){
             strncpy(line, msg_ptr, LINE_SIZE);
-        }
-        else{
-            return TARGET;
-        }
-
-        /*If target is BROADCAST, broadcast to all clients*/
-        if (target == BROADCAST) {
-            int j;
-            for (j = 0; j < num_clients; j++) {
-                if (clients[j].fd != fd && clients[j].fd > 0) {
-                    send(clients[j].fd, line, strlen(line), 0);
-                }
-            }
-        }
-        /*Else send to the specified target*/
-        else{
-            int k;
-            for (k = 0; k < num_clients; k++) {
-                if (clients[k].id == target) {
-                    send(clients[k].fd, line, strlen(line), 0);
-                }
-            }
+            send_to_target(clients, sender, target, line);
         }
 
         return TARGET;
     }
 
-    return 0;
+    return NO_CODE;
 }
