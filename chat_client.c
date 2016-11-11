@@ -3,20 +3,23 @@
 //
 
 #include "tcp_chat.h"
+#include "encrypt.h"
+#include "client_list.h"
 
 void * get_input (void * arg);
-
-int id;
+void create_symmetric_key(unsigned char *key, unsigned char *iv);
+void send_symmetric_key(int sockfd, unsigned char *key, unsigned char *iv);
 
 int main( int argc, char * argv[] ) {
     char msg[LINE_SIZE];
-    int err, sockfd;
+    int err;
     struct sockaddr_in serveraddr;
     pthread_t child;
+    client_t client;
 
     /*Create socket*/
-    sockfd = socket(AF_INET, SOCK_STREAM, 0);
-    if (sockfd < 0) {
+    client.fd = socket(AF_INET, SOCK_STREAM, 0);
+    if (client.fd < 0) {
         printf("There was an error creating the socket\n");
         exit(1);
     }
@@ -35,15 +38,28 @@ int main( int argc, char * argv[] ) {
     serveraddr.sin_addr.s_addr = inet_addr(argv[2]);
 
     /*Connect to server*/
-    err = connect(sockfd, (struct sockaddr *) &serveraddr, sizeof(serveraddr));
+    err = connect(client.fd, (struct sockaddr *) &serveraddr, sizeof(serveraddr));
     if (err < 0) {
         printf("There was an error with connecting\n");
         exit(1);
     }
 
-    recv(sockfd, &id, sizeof(int), 0);
+    /*Receive assigned Client ID number from server*/
+    recv(client.fd, &(client.id), sizeof(int), 0);
 
-    if( pthread_create(&child, NULL, get_input, &sockfd) != 0) {
+    /*Create new symmetric key and send to the server*/
+    create_symmetric_key(client.key, client.iv);
+
+    /*Print key debug information to stdout*/
+    printf("Created new symmetric key:\nKEY:\n");
+    BIO_dump_fp(stdout, (const char *)client.key, KEY_LEN);
+    printf("\nIV:\n");
+    BIO_dump_fp(stdout, (const char *)client.iv, IV_LEN);
+    printf("\n");
+
+    send_symmetric_key(client.fd, client.key, client.iv);
+
+    if( pthread_create(&child, NULL, get_input, &client) != 0) {
         printf("Failed to create thread\n");
         return 1;
     }
@@ -53,34 +69,35 @@ int main( int argc, char * argv[] ) {
         memset(msg, 0, LINE_SIZE);
 
         /*Get message from server*/
-        recv(sockfd, msg, LINE_SIZE, 0);
+        recv(client.fd, msg, LINE_SIZE, 0);
 
         /*Check for commands*/
         int command = check_command(msg, NULL);
 
         /*If !exit command was received, shut down gracefully*/
         if(command == EXIT){
-            close(sockfd);
+            close(client.fd);
             printf("Received exit command. Disconnecting...\n");
             exit(0);
         }
 
-        printf("\n%s\nClient #%d>", msg, id);
+        printf("\n%s\nClient #%d>", msg, client.id);
         fflush(stdout);
     }
 }
 
 void * get_input (void * arg){
-    int sockfd = *(int *)arg;
-    int target = -1;
+    client_t client = *(client_t *)arg;
+    int target = -1, encrypt_len;
     char buffer[LINE_SIZE], to_send[LINE_SIZE];
+    unsigned char encrypt_text[LINE_SIZE];
 
     memset(to_send, 0, LINE_SIZE);
     memset(buffer, 0, LINE_SIZE);
 
     /*Get input, send to server*/
     while(strcmp(to_send, "!exit") != 0){
-        printf("Client #%d>", id);
+        printf("Client #%d>", client.id);
         fgets(buffer, LINE_SIZE, stdin);
         buffer[strlen(buffer) - 1] = 0;
 
@@ -102,11 +119,29 @@ void * get_input (void * arg){
             strncpy(to_send, buffer, LINE_SIZE);
         }
 
-        send(sockfd, to_send, strlen(to_send), 0);
+        /*Encrypt message*/
+        encrypt_len = encrypt( (unsigned char *)to_send, strlen(to_send),
+                               client.key, client.iv, encrypt_text);
+
+        /*Display encrypted message*/
+        printf("SENDING ENCRYPTED MESSAGE:\n");
+        BIO_dump_fp(stdout, (const char *)encrypt_text, encrypt_len);
+        printf("\n");
+
+        /*Send size of encrypted message*/
+        send(client.fd, &encrypt_len, sizeof(int), 0);
+
+        /*Send encrypted message*/
+        send(client.fd, encrypt_text, encrypt_len, 0);
+
+        /*Decrypt message and output*/
+        memset(buffer, 0, LINE_SIZE);
+        decrypt(encrypt_text, encrypt_len, client.key, client.iv, buffer);
+        printf("Decrypted message:\n%s\n", buffer);
 
         /*If command is !exit, disconnect*/
         if(command == EXIT){
-            close(sockfd);
+            close(client.fd);
             printf("Received exit command. Disconnecting...\n");
             break;
         }
@@ -115,6 +150,64 @@ void * get_input (void * arg){
         memset(buffer, 0, LINE_SIZE);
         memset(to_send, 0, LINE_SIZE);
     }
-    close(sockfd);
+    close(client.fd);
     exit(0);
+}
+
+void create_symmetric_key(unsigned char *key, unsigned char *iv){
+    ERR_load_crypto_strings();
+    OpenSSL_add_all_algorithms();
+    OPENSSL_config(NULL);
+
+    /*Create key and Initialization Vector*/
+    RAND_bytes(key,KEY_LEN);
+    RAND_pseudo_bytes(iv,IV_LEN);
+
+    /*SSL Cleanup functions?*/
+    EVP_cleanup();
+    ERR_free_strings();
+}
+
+/*Create symmetric key, encrypt with public key, and send to server*/
+void send_symmetric_key(int sockfd, unsigned char *key, unsigned char *iv){
+    int encryptedkey_len = 0;
+    EVP_PKEY *pubkey;
+    FILE* pubf;
+    unsigned char encrypted_key[ENCRYPTEDKEY_LEN];
+    char *pubfilename = "RSApub.pem";
+
+    /*SSL Initialization functions?*/
+    ERR_load_crypto_strings();
+    OpenSSL_add_all_algorithms();
+    OPENSSL_config(NULL);
+
+    /*Open server public key from file*/
+    pubf = fopen(pubfilename,"rb");
+    if(pubf == NULL){
+        fprintf(stderr, "Error opening RSApub.pem\n");
+        return;
+    }
+    pubkey = PEM_read_PUBKEY(pubf,NULL,NULL,NULL);
+
+    /*Encrypt symmetric key*/
+    encryptedkey_len = rsa_encrypt(key, KEY_LEN, pubkey, encrypted_key);
+
+    /*Print key debug information to stdout*/
+    printf("ENCRYPTED KEY:\n");
+    BIO_dump_fp(stdout, (const char *)encrypted_key, encryptedkey_len);
+    printf("\n");
+
+    /*Send plain text Initialization Vector*/
+    send(sockfd, iv, IV_LEN, 0);
+
+    /*Tell server length of encrypted key*/
+    send(sockfd, &encryptedkey_len, sizeof(int), 0);
+
+    /*Send encrypted symmetric key*/
+    send(sockfd, encrypted_key, ENCRYPTEDKEY_LEN, 0);
+
+    /*SSL Cleanup functions?*/
+    EVP_cleanup();
+    ERR_free_strings();
+    fclose(pubf);
 }

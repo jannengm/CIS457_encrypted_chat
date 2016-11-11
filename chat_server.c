@@ -4,8 +4,10 @@
 
 #include "tcp_chat.h"
 #include "client_list.h"
+#include "encrypt.h"
 
 int handle_client( client_t *sender, client_list_t *clients, fd_set *active_set );
+void recv_symmetric_key(int sockfd, unsigned char *key, unsigned char *iv);
 
 int main(int argc, char **argv){
     int sockfd, new_sock, i, num_clients = 0;
@@ -81,6 +83,9 @@ int main(int argc, char **argv){
 
                     /*Send assigned Client ID# to new client*/
                     send(new_sock, &client.id, sizeof(int), 0);
+
+                    /*Receive encrypted symmetric key*/
+                    recv_symmetric_key(new_sock, client.key, client.iv);
                 }
 
                 /*If client is connected but not on master socket,
@@ -111,15 +116,33 @@ int main(int argc, char **argv){
 
 int handle_client( client_t *sender, client_list_t *clients, fd_set *active_set ){
     char buffer[BUFF_SIZE], line[LINE_SIZE];
+    unsigned char encrypt_text[LINE_SIZE];
     //int buff_len, file_size;
-    int command, target, to_clear;
+    int command, target, to_clear, encrypt_len = 0, code;
+
+    /*SSL Initialization functions?*/
+    ERR_load_crypto_strings();
+    OpenSSL_add_all_algorithms();
+    OPENSSL_config(NULL);
 
     /*Clear the input buffer*/
     memset(line, 0, LINE_SIZE);
     memset(buffer, 0, BUFF_SIZE);
+    memset(encrypt_text, 0, LINE_SIZE);
 
-    /*Get file name from client*/
-    recv(sender->fd, buffer, BUFF_SIZE, 0);
+    /*Get encrypted message from client*/
+    recv(sender->fd, &encrypt_len, sizeof(int), 0);
+    recv(sender->fd, encrypt_text, BUFF_SIZE, 0);
+
+    printf("Received encrypted packet of length %d\n", encrypt_len);
+    printf("ENCRYPTED MESSAGE:\n");
+    BIO_dump_fp(stdout, (const char *)encrypt_text, encrypt_len);
+    printf("\n");
+    sleep(5);
+
+    /*Decrypt message*/
+    decrypt(encrypt_text, encrypt_len, sender->key, sender->iv,
+            (unsigned char *)buffer);
 
     printf("Got from client:\n%s\n", buffer);
 
@@ -127,30 +150,30 @@ int handle_client( client_t *sender, client_list_t *clients, fd_set *active_set 
 
     if(command == EXIT){
         //remove this client from list
-        return EXIT;
+        code = EXIT;
     }
-    if(command == KILL){
+    else if(command == KILL){
         //send !exit to specified client
         sscanf(buffer, "%s %d", line, &target);
         send_to_target(clients, sender, target, "!exit");
         to_clear = find_client_id(clients, target)->data.fd;
         disconnect_client(clients, target);
         FD_CLR(to_clear, active_set);
-        return KILL;
+        code = KILL;
     }
-    if(command == SHUTDOWN){
+    else if(command == SHUTDOWN){
         //Disconnect all clients, shut down server
-        return SHUTDOWN;
+        code = SHUTDOWN;
     }
-    if(command == LIST){
+    else if(command == LIST){
         //send list to requesting client
         to_string(clients, line, LINE_SIZE);
         client_t server;
         server.id = BROADCAST;
         send_to_target(clients, &server, sender->id, line);
-        return LIST;
+        code = LIST;
     }
-    if(command == TARGET) {
+    else if(command == TARGET) {
         /*Remove target tag*/
         int i;
         char *msg_ptr = NULL;
@@ -166,8 +189,61 @@ int handle_client( client_t *sender, client_list_t *clients, fd_set *active_set 
             send_to_target(clients, sender, target, line);
         }
 
-        return TARGET;
+        code = TARGET;
+    }
+    else{
+        code = NO_CODE;
     }
 
-    return NO_CODE;
+    /*SSL Cleanup functions?*/
+    EVP_cleanup();
+    ERR_free_strings();
+
+    return code;
+}
+void recv_symmetric_key(int sockfd, unsigned char *key, unsigned char *iv){
+    EVP_PKEY *privkey;
+    FILE* privf;
+    char *privfilename = "RSApriv.pem";
+    int encryptedkey_len = 0;
+    unsigned char encrypted_key[ENCRYPTEDKEY_LEN];
+
+    /*SSL Initialization functions?*/
+    ERR_load_crypto_strings();
+    OpenSSL_add_all_algorithms();
+    OPENSSL_config(NULL);
+
+    privf = fopen(privfilename,"rb");
+    if(privf == NULL){
+        fprintf(stderr, "Error opening RSApriv.pem\n");
+        return;
+    }
+    privkey = PEM_read_PrivateKey(privf,NULL,NULL,NULL);
+
+    /*Get plain text Initialization Vector from client*/
+    recv(sockfd, iv, IV_LEN, 0);
+
+    /*Get length of encrypted key*/
+    recv(sockfd, &encryptedkey_len, sizeof(int), 0);
+
+    /*Receive encrypted key*/
+    recv(sockfd, encrypted_key, ENCRYPTEDKEY_LEN, 0);
+
+    /*Decrypt key*/
+    rsa_decrypt(encrypted_key, (size_t)encryptedkey_len, privkey, key);
+
+    /*Print received key to stdout*/
+    printf("Received key from client:\n");
+    printf("IV:\n");
+    BIO_dump_fp(stdout, (const char *)iv, IV_LEN);
+    printf("\nENCRYPTED KEY:\n");
+    BIO_dump_fp(stdout, (const char *)encrypted_key, encryptedkey_len);
+    printf("\nDECRYPTED KEY:\n");
+    BIO_dump_fp(stdout, (const char *)key, KEY_LEN);
+    printf("\n");
+
+    /*SSL Cleanup functions?*/
+    EVP_cleanup();
+    ERR_free_strings();
+    fclose(privf);
 }

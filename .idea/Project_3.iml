@@ -6,8 +6,10 @@
       <sourceFolder url="file://$MODULE_DIR$/CMakeLists.txt" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/chat_server.c" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/client_list.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/encrypt.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/tcp_chat.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/client_list.c" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/encrypt.c" isTestSource="false" />
     </content>
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module-library">

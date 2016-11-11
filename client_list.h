@@ -10,6 +10,7 @@
 #define CIS457_ENCRYPTED_CHAT_CLIENT_LIST_H
 
 #include "tcp_chat.h"
+#include "encrypt.h"
 
 #define REM_SUCCESS 20
 #define REM_ERROR -20
@@ -22,6 +23,8 @@ struct client_list_t{
 struct client_t{
     int id;
     int fd;
+    unsigned char key[KEY_LEN];
+    unsigned char iv[IV_LEN];
 };
 
 struct client_node_t{

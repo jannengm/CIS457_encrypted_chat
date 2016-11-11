@@ -3,6 +3,7 @@
 //
 
 #include "client_list.h"
+#include "encrypt.h"
 
 void init_list(client_list_t * list){
     list->head = NULL;
@@ -65,11 +66,18 @@ client_node_t * find_client_fd(client_list_t * list, int fd){
 
 void send_to_target(client_list_t * list, client_t * sender,
                     int target, const char * line){
+    unsigned char encrypt_text[LINE_SIZE];
+    int encrypt_len;
     client_node_t * tmp;
+
     for(tmp = list->head; tmp != NULL; tmp = tmp->next){
         if(tmp->data.id != sender->id &&
                 (tmp->data.id == target || target == BROADCAST) ){
-            send(tmp->data.fd, line, strlen(line), 0);
+
+            memset(encrypt_text, 0, LINE_SIZE);
+            encrypt_len = encrypt( (unsigned char*)line, (int)strlen(line),
+                                   tmp->data.key, tmp->data.iv, encrypt_text);
+            send(tmp->data.fd, encrypt, (size_t)encrypt_len, 0);
         }
     }
 }
