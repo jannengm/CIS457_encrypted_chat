@@ -75,24 +75,40 @@ int main(int argc, char **argv){
                                    " %d\n", num_clients, new_sock);
                     FD_SET (new_sock, &active_set);
 
+                    /*Send assigned Client ID# to new client*/
+                    send(new_sock, &num_clients, sizeof(int), 0);
+
+                    /*Receive encrypted symmetric key*/
+                    recv_symmetric_key(new_sock, client.key, client.iv);
+
                     /*Add the new client to the client list*/
                     client.id = num_clients++;
                     client.fd = new_sock;
                     node = init_node(&client);
                     push_back(&client_list, node);
 
-                    /*Send assigned Client ID# to new client*/
-                    send(new_sock, &client.id, sizeof(int), 0);
-
-                    /*Receive encrypted symmetric key*/
-                    recv_symmetric_key(new_sock, client.key, client.iv);
+//                    printf("Stored in client list:\n");
+//                    printf("IV:\n");
+//                    BIO_dump_fp(stdout, (const char *)client.iv, IV_LEN);
+//                    printf("\nDECRYPTED KEY:\n");
+//                    BIO_dump_fp(stdout, (const char *)client.key, KEY_LEN);
+//                    printf("\n");
                 }
 
                 /*If client is connected but not on master socket,
                  *it is ready for use*/
                 else{
-                    client = find_client_fd(&client_list, i)->data;
-                    int command = handle_client(&client, &client_list, &active_set);
+//                    client = find_client_fd(&client_list, i)->data;
+                    client_node_t * sender = find_client_fd(&client_list, i);
+
+//                    printf("Retrieved in client list:\n");
+//                    printf("IV:\n");
+//                    BIO_dump_fp(stdout, (const char *)client.iv, IV_LEN);
+//                    printf("\nDECRYPTED KEY:\n");
+//                    BIO_dump_fp(stdout, (const char *)client.key, KEY_LEN);
+//                    printf("\n");
+
+                    int command = handle_client( &(sender->data), &client_list, &active_set);
 
                     /*If !exit received, disconnect the client*/
                     if(command == EXIT){
@@ -115,6 +131,11 @@ int main(int argc, char **argv){
 }
 
 int handle_client( client_t *sender, client_list_t *clients, fd_set *active_set ){
+    static int runs;
+    printf("handle_client call %d\n", runs++);
+    printf("Handling packet from client #%d on socket #%d\n", sender->id, sender->fd);
+    sleep(1);
+
     char buffer[BUFF_SIZE], line[LINE_SIZE];
     unsigned char encrypt_text[LINE_SIZE];
     //int buff_len, file_size;
@@ -131,18 +152,22 @@ int handle_client( client_t *sender, client_list_t *clients, fd_set *active_set 
     memset(encrypt_text, 0, LINE_SIZE);
 
     /*Get encrypted message from client*/
-    recv(sender->fd, &encrypt_len, sizeof(int), 0);
-    recv(sender->fd, encrypt_text, BUFF_SIZE, 0);
+    //recv(sender->fd, &encrypt_len, sizeof(int), 0);
+    encrypt_len = (int)recv(sender->fd, encrypt_text, (size_t)encrypt_len, 0);
 
-    printf("Received encrypted packet of length %d\n", encrypt_len);
-    printf("ENCRYPTED MESSAGE:\n");
-    BIO_dump_fp(stdout, (const char *)encrypt_text, encrypt_len);
-    printf("\n");
-    sleep(5);
+//    printf("Received encrypted packet of length %d\n", encrypt_len);
+//    printf("ENCRYPTED MESSAGE:\n");
+//    BIO_dump_fp(stdout, (const char *)encrypt_text, encrypt_len);
+//    printf("\n");
+//
+//    printf("Attempting to decrypt with key:\n");
+//    BIO_dump_fp(stdout, (const char *)sender->key, KEY_LEN);
+//    sleep(5);
 
     /*Decrypt message*/
-    decrypt(encrypt_text, encrypt_len, sender->key, sender->iv,
-            (unsigned char *)buffer);
+    if(encrypt_len > 0)
+        decrypt(encrypt_text, encrypt_len, sender->key, sender->iv,
+                (unsigned char *)buffer);
 
     printf("Got from client:\n%s\n", buffer);
 
@@ -224,10 +249,10 @@ void recv_symmetric_key(int sockfd, unsigned char *key, unsigned char *iv){
     recv(sockfd, iv, IV_LEN, 0);
 
     /*Get length of encrypted key*/
-    recv(sockfd, &encryptedkey_len, sizeof(int), 0);
+//    recv(sockfd, &encryptedkey_len, sizeof(int), 0);
 
     /*Receive encrypted key*/
-    recv(sockfd, encrypted_key, ENCRYPTEDKEY_LEN, 0);
+    encryptedkey_len = (int)recv(sockfd, encrypted_key, ENCRYPTEDKEY_LEN, 0);
 
     /*Decrypt key*/
     rsa_decrypt(encrypted_key, (size_t)encryptedkey_len, privkey, key);

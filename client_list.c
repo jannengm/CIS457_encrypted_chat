@@ -41,6 +41,8 @@ client_node_t * init_node(client_t * data){
     client_node_t * node = malloc( sizeof(client_node_t) );
     node->data.id = data->id;
     node->data.fd = data->fd;
+    memcpy(node->data.key, data->key, KEY_LEN);
+    memcpy(node->data.iv, data->iv, IV_LEN);
     node->next = NULL;
     node->prev = NULL;
     return node;
@@ -73,10 +75,11 @@ void send_to_target(client_list_t * list, client_t * sender,
     for(tmp = list->head; tmp != NULL; tmp = tmp->next){
         if(tmp->data.id != sender->id &&
                 (tmp->data.id == target || target == BROADCAST) ){
-
+//            printf("Sending to client #%d from client #%d\n", tmp->data.id, sender->id);
             memset(encrypt_text, 0, LINE_SIZE);
             encrypt_len = encrypt( (unsigned char*)line, (int)strlen(line),
                                    tmp->data.key, tmp->data.iv, encrypt_text);
+//            send(tmp->data.fd, &encrypt_len, sizeof(int), 0);
             send(tmp->data.fd, encrypt, (size_t)encrypt_len, 0);
         }
     }

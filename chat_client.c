@@ -12,7 +12,8 @@ void send_symmetric_key(int sockfd, unsigned char *key, unsigned char *iv);
 
 int main( int argc, char * argv[] ) {
     char msg[LINE_SIZE];
-    int err;
+    unsigned char encrypt_text[LINE_SIZE];
+    int err, encrypt_len;
     struct sockaddr_in serveraddr;
     pthread_t child;
     client_t client;
@@ -67,9 +68,21 @@ int main( int argc, char * argv[] ) {
 
     while(1){
         memset(msg, 0, LINE_SIZE);
+        memset(encrypt_text, 0, LINE_SIZE);
 
+
+        printf()
         /*Get message from server*/
-        recv(client.fd, msg, LINE_SIZE, 0);
+//        recv(client.fd, &encrypt_len, sizeof(int), 0);
+//        encrypt_len = (int)recv(client.fd, encrypt_text, LINE_SIZE, 0);
+//
+//        /*Decrypt message*/
+//        if(encrypt_len > 0)
+//            decrypt(encrypt_text, encrypt_len, client.key, client.iv,
+//                    (unsigned char *)msg);
+//        else{
+//            printf("Received zero length packet\n");
+//        }
 
         /*Check for commands*/
         int command = check_command(msg, NULL);
@@ -124,20 +137,20 @@ void * get_input (void * arg){
                                client.key, client.iv, encrypt_text);
 
         /*Display encrypted message*/
-        printf("SENDING ENCRYPTED MESSAGE:\n");
-        BIO_dump_fp(stdout, (const char *)encrypt_text, encrypt_len);
-        printf("\n");
+//        printf("SENDING ENCRYPTED MESSAGE:\n");
+//        BIO_dump_fp(stdout, (const char *)encrypt_text, encrypt_len);
+//        printf("\n");
 
         /*Send size of encrypted message*/
-        send(client.fd, &encrypt_len, sizeof(int), 0);
+//        send(client.fd, &encrypt_len, sizeof(int), 0);
 
         /*Send encrypted message*/
         send(client.fd, encrypt_text, encrypt_len, 0);
 
         /*Decrypt message and output*/
-        memset(buffer, 0, LINE_SIZE);
-        decrypt(encrypt_text, encrypt_len, client.key, client.iv, buffer);
-        printf("Decrypted message:\n%s\n", buffer);
+//        memset(buffer, 0, LINE_SIZE);
+//        decrypt(encrypt_text, encrypt_len, client.key, client.iv, (unsigned char *)buffer);
+//        printf("Decrypted message:\n%s\n", buffer);
 
         /*If command is !exit, disconnect*/
         if(command == EXIT){
@@ -201,7 +214,7 @@ void send_symmetric_key(int sockfd, unsigned char *key, unsigned char *iv){
     send(sockfd, iv, IV_LEN, 0);
 
     /*Tell server length of encrypted key*/
-    send(sockfd, &encryptedkey_len, sizeof(int), 0);
+//    send(sockfd, &encryptedkey_len, sizeof(int), 0);
 
     /*Send encrypted symmetric key*/
     send(sockfd, encrypted_key, ENCRYPTEDKEY_LEN, 0);
