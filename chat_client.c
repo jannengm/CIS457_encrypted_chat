@@ -13,7 +13,7 @@ void send_symmetric_key(int sockfd, unsigned char *key, unsigned char *iv);
 int main( int argc, char * argv[] ) {
     char msg[LINE_SIZE];
     unsigned char encrypt_text[LINE_SIZE];
-    int err, encrypt_len;
+    int err, encrypt_len, decrypt_len;
     struct sockaddr_in serveraddr;
     pthread_t child;
     client_t client;
@@ -71,18 +71,37 @@ int main( int argc, char * argv[] ) {
         memset(encrypt_text, 0, LINE_SIZE);
 
 
-        printf()
+//        printf()
         /*Get message from server*/
 //        recv(client.fd, &encrypt_len, sizeof(int), 0);
-//        encrypt_len = (int)recv(client.fd, encrypt_text, LINE_SIZE, 0);
-//
-//        /*Decrypt message*/
-//        if(encrypt_len > 0)
-//            decrypt(encrypt_text, encrypt_len, client.key, client.iv,
-//                    (unsigned char *)msg);
-//        else{
-//            printf("Received zero length packet\n");
-//        }
+//        recv(client.fd, encrypt_text, encrypt_len, 0);
+        encrypt_len = (int)recv(client.fd, encrypt_text, LINE_SIZE, 0);
+
+//        printf("Received encrypted packet of length %d\n", encrypt_len);
+//        printf("ENCRYPTED MESSAGE:\n");
+//        BIO_dump_fp(stdout, (const char *)encrypt_text, encrypt_len);
+//        printf("\n");
+
+        /*Decrypt message*/
+        if(encrypt_len > 0) {
+            decrypt_len = decrypt(encrypt_text, encrypt_len, client.key, client.iv,
+                                  (unsigned char *) msg);
+//            printf("\n%s", msg);
+            /*There are some garbage characters at the end of the decrypted message*/
+            int i;
+            for(i = 0; i < strlen(msg); i++){
+                if( !isprint( msg[i] ) && msg[i] != '\n' ){
+                    msg[i] = '\0';
+                    break;
+                }
+            }
+//            printf("Decrypted message length: %d\n", decrypt_len);
+//            msg[decrypt_len] = '\0';
+        }
+        else{
+            printf("\nReceived zero length packet\n");
+            sleep(1);
+        }
 
         /*Check for commands*/
         int command = check_command(msg, NULL);
@@ -90,7 +109,7 @@ int main( int argc, char * argv[] ) {
         /*If !exit command was received, shut down gracefully*/
         if(command == EXIT){
             close(client.fd);
-            printf("Received exit command. Disconnecting...\n");
+            printf("\nReceived exit command. Disconnecting...\n");
             exit(0);
         }
 

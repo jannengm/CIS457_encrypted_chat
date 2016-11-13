@@ -131,10 +131,10 @@ int main(int argc, char **argv){
 }
 
 int handle_client( client_t *sender, client_list_t *clients, fd_set *active_set ){
-    static int runs;
-    printf("handle_client call %d\n", runs++);
-    printf("Handling packet from client #%d on socket #%d\n", sender->id, sender->fd);
-    sleep(1);
+//    static int runs;
+//    printf("handle_client call %d\n", runs++);
+//    printf("Handling packet from client #%d on socket #%d\n", sender->id, sender->fd);
+//    sleep(1);
 
     char buffer[BUFF_SIZE], line[LINE_SIZE];
     unsigned char encrypt_text[LINE_SIZE];
@@ -153,7 +153,7 @@ int handle_client( client_t *sender, client_list_t *clients, fd_set *active_set 
 
     /*Get encrypted message from client*/
     //recv(sender->fd, &encrypt_len, sizeof(int), 0);
-    encrypt_len = (int)recv(sender->fd, encrypt_text, (size_t)encrypt_len, 0);
+    encrypt_len = (int)recv(sender->fd, encrypt_text, LINE_SIZE, 0);
 
 //    printf("Received encrypted packet of length %d\n", encrypt_len);
 //    printf("ENCRYPTED MESSAGE:\n");
@@ -169,7 +169,7 @@ int handle_client( client_t *sender, client_list_t *clients, fd_set *active_set 
         decrypt(encrypt_text, encrypt_len, sender->key, sender->iv,
                 (unsigned char *)buffer);
 
-    printf("Got from client:\n%s\n", buffer);
+//    printf("Got from client:\n%s\n", buffer);
 
     command = check_command(buffer, &target);
 
@@ -194,6 +194,7 @@ int handle_client( client_t *sender, client_list_t *clients, fd_set *active_set 
         //send list to requesting client
         to_string(clients, line, LINE_SIZE);
         client_t server;
+        memcpy(&server, sender, sizeof(client_t));
         server.id = BROADCAST;
         send_to_target(clients, &server, sender->id, line);
         code = LIST;

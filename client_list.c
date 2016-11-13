@@ -76,11 +76,20 @@ void send_to_target(client_list_t * list, client_t * sender,
         if(tmp->data.id != sender->id &&
                 (tmp->data.id == target || target == BROADCAST) ){
 //            printf("Sending to client #%d from client #%d\n", tmp->data.id, sender->id);
+//            printf("Unencrypted message:\n%s\n", line);
             memset(encrypt_text, 0, LINE_SIZE);
+
+//            printf("Encrypting with key:\nKEY:\n");
+//            BIO_dump_fp(stdout, (const char *)tmp->data.key, KEY_LEN);
+//            printf("\n");
+
             encrypt_len = encrypt( (unsigned char*)line, (int)strlen(line),
                                    tmp->data.key, tmp->data.iv, encrypt_text);
 //            send(tmp->data.fd, &encrypt_len, sizeof(int), 0);
-            send(tmp->data.fd, encrypt, (size_t)encrypt_len, 0);
+//            printf("ENCRYPTED MESSAGE:\n");
+//            BIO_dump_fp(stdout, (const char *)encrypt_text, encrypt_len);
+
+            send(tmp->data.fd, encrypt_text, (size_t)encrypt_len, 0);
         }
     }
 }
@@ -149,5 +158,5 @@ void to_string(client_list_t * list, char * list_str, size_t size){
         memcpy( ptr, line, strlen(line) );
         ptr += strlen(line);
     }
-
+    printf("%s", list_str);
 }
