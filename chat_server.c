@@ -112,8 +112,12 @@ int main(int argc, char **argv){
 
                     /*If !exit received, disconnect the client*/
                     if(command == EXIT){
-                        disconnect_client(&client_list, client.id);
                         FD_CLR(i, &active_set);
+                        int exit_code = disconnect_client(&client_list, client.id);
+                        if(exit_code == REM_ERROR){
+                            fprintf(stderr, "Error disconnecting client\n");
+                        }
+//                        FD_CLR(i, &active_set);
                     }
 
                     /*If !shutdown received, disconnect all clients and exit*/

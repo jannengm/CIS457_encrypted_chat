@@ -13,10 +13,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4907caf3-c43f-4e15-8f4e-6b0d4008e1af" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/client" afterPath="$PROJECT_DIR$/client" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/server" afterPath="$PROJECT_DIR$/server" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/chat_client.c" afterPath="$PROJECT_DIR$/chat_client.c" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/chat_server.c" afterPath="$PROJECT_DIR$/chat_server.c" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/client_list.c" afterPath="$PROJECT_DIR$/client_list.c" />
     </list>
@@ -40,8 +38,8 @@
             <file leaf-file-name="client_list.c" pinned="false" current-in-tab="true">
               <entry file="file://$PROJECT_DIR$/client_list.c">
                 <provider selected="true" editor-type-id="text-editor">
-                  <state relative-caret-position="822">
-                    <caret line="160" column="27" selection-start-line="160" selection-start-column="27" selection-end-line="160" selection-end-column="27" />
+                  <state relative-caret-position="766">
+                    <caret line="159" column="5" selection-start-line="159" selection-start-column="5" selection-end-line="159" selection-end-column="5" />
                     <folding>
                       <element signature="e#42#66#0" expanded="true" />
                       <element signature="e#89#174#0" expanded="false" />
@@ -49,7 +47,6 @@
                       <element signature="e#437#727#0" expanded="false" />
                       <element signature="e#1052#1269#0" expanded="false" />
                       <element signature="e#1271#1488#0" expanded="false" />
-                      <element signature="e#2643#3825#0" expanded="false" />
                     </folding>
                   </state>
                 </provider>
@@ -71,8 +68,8 @@
           <file leaf-file-name="chat_server.c" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/chat_server.c">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="360">
-                  <caret line="172" column="0" selection-start-line="172" selection-start-column="0" selection-end-line="172" selection-end-column="0" />
+                <state relative-caret-position="-940">
+                  <caret line="137" column="22" selection-start-line="137" selection-start-column="22" selection-end-line="137" selection-end-column="22" />
                   <folding>
                     <element signature="e#166#187#0" expanded="true" />
                   </folding>
@@ -97,7 +94,7 @@
           <file leaf-file-name="chat_client.c" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/chat_client.c">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="378">
+                <state relative-caret-position="216">
                   <caret line="92" column="55" selection-start-line="92" selection-start-column="55" selection-end-line="92" selection-end-column="55" />
                   <folding>
                     <element signature="e#42#63#0" expanded="true" />
@@ -126,9 +123,9 @@
         <option value="$PROJECT_DIR$/encrypt.h" />
         <option value="$PROJECT_DIR$/client_list.h" />
         <option value="$PROJECT_DIR$/CMakeLists.txt" />
-        <option value="$PROJECT_DIR$/client_list.c" />
-        <option value="$PROJECT_DIR$/chat_server.c" />
         <option value="$PROJECT_DIR$/chat_client.c" />
+        <option value="$PROJECT_DIR$/chat_server.c" />
+        <option value="$PROJECT_DIR$/client_list.c" />
       </list>
     </option>
   </component>
@@ -393,12 +390,12 @@
       <workItem from="1478473120249" duration="1069000" />
       <workItem from="1478887676939" duration="16880000" />
       <workItem from="1478921500197" duration="5767000" />
-      <workItem from="1478991574171" duration="3861000" />
+      <workItem from="1478991574171" duration="5181000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="55945000" />
+    <option name="totallyTimeSpent" value="57265000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="1920" y="24" width="1920" height="1001" extended-state="6" />
@@ -846,10 +843,32 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/chat_client.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="216">
+          <caret line="92" column="55" selection-start-line="92" selection-start-column="55" selection-end-line="92" selection-end-column="55" />
+          <folding>
+            <element signature="e#42#63#0" expanded="true" />
+            <element signature="e#5819#6161#0" expanded="false" />
+            <element signature="e#6163#7463#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/chat_server.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-940">
+          <caret line="137" column="22" selection-start-line="137" selection-start-column="22" selection-end-line="137" selection-end-column="22" />
+          <folding>
+            <element signature="e#166#187#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/client_list.c">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="822">
-          <caret line="160" column="27" selection-start-line="160" selection-start-column="27" selection-end-line="160" selection-end-column="27" />
+        <state relative-caret-position="766">
+          <caret line="159" column="5" selection-start-line="159" selection-start-column="5" selection-end-line="159" selection-end-column="5" />
           <folding>
             <element signature="e#42#66#0" expanded="true" />
             <element signature="e#89#174#0" expanded="false" />
@@ -857,29 +876,6 @@
             <element signature="e#437#727#0" expanded="false" />
             <element signature="e#1052#1269#0" expanded="false" />
             <element signature="e#1271#1488#0" expanded="false" />
-            <element signature="e#2643#3825#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/chat_server.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="360">
-          <caret line="172" column="0" selection-start-line="172" selection-start-column="0" selection-end-line="172" selection-end-column="0" />
-          <folding>
-            <element signature="e#166#187#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/chat_client.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="378">
-          <caret line="92" column="55" selection-start-line="92" selection-start-column="55" selection-end-line="92" selection-end-column="55" />
-          <folding>
-            <element signature="e#42#63#0" expanded="true" />
-            <element signature="e#5819#6161#0" expanded="false" />
-            <element signature="e#6163#7463#0" expanded="false" />
           </folding>
         </state>
       </provider>

@@ -158,5 +158,4 @@ void to_string(client_list_t * list, char * list_str, size_t size){
         memcpy( ptr, line, strlen(line) );
         ptr += strlen(line);
     }
-    printf("%s", list_str);
 }
