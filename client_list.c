@@ -1,7 +1,7 @@
 /*******************************************************************************
  * CIS 457 - Project 3: TCP Encrypted Chat Program
  * client_list.c source code
- * author: Mark Jannenga
+ * @author Mark Jannenga
  *
  * Implements functions declared in client_list.h
  ******************************************************************************/

@@ -1,10 +1,10 @@
 /*******************************************************************************
  * CIS 457 - Project 3: TCP Encrypted Chat Program
  * encrypt.c source code
- * author: Mark Jannenga
+ * @author Mark Jannenga
  *
  * Implements functions declared in encrypt.h. The majority of the code was
- * provided by the instructor, Prof. Andrew Kalafut, whcih in turn was copied
+ * provided by the instructor, Prof. Andrew Kalafut, which in turn was copied
  * heavily from the OpenSSL wiki and man pages.
  ******************************************************************************/
 

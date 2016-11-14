@@ -1,7 +1,7 @@
 /*******************************************************************************
  * CIS 457 - Project 3: TCP Encrypted Chat Program
  * TCP Chat Server
- * author: Mark Jannenga
+ * @author Mark Jannenga
  *
  * This program implements an encrypted TCP chat client using the OpenSSL
  * libcrypto library. Upon connection to the server, the client randomly

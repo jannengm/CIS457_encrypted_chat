@@ -1,7 +1,7 @@
 /*******************************************************************************
  * CIS 457 - Project 3: TCP Encrypted Chat Program
  * tcp_chat.c source code
- * author: Mark Jannenga
+ * @author Mark Jannenga
  *
  * Implements functions declared in tcp_chat.h
  ******************************************************************************/

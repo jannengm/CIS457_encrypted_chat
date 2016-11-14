@@ -1,7 +1,7 @@
 /*******************************************************************************
  * CIS 457 - Project 3: TCP Encrypted Chat Program
  * encrypt.h header file
- * author: Mark Jannenga
+ * @author Mark Jannenga
  *
  * Defines constants and declares functions used in encryption and decryption
  * of messages.

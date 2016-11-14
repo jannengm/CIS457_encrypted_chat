@@ -1,7 +1,7 @@
 /*******************************************************************************
  * CIS 457 - Project 3: TCP Encrypted Chat Program
  * client_list.h header file
- * author: Mark Jannenga
+ * @author Mark Jannenga
  *
  * Defines constants and declares functions used in implementing a linked list
  * of clients. Also defines functions used for operations on individual client

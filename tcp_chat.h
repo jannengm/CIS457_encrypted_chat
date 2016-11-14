@@ -1,7 +1,7 @@
 /*******************************************************************************
  * CIS 457 - Project 3: TCP Encrypted Chat Program
  * tcp_chat.h header file
- * author: Mark Jannenga
+ * @author Mark Jannenga
  *
  * Defines general constants, command codes, and exit codes used by TCP Chat
  * Server and TCP Chat Client. Declares function prototypes for general use
