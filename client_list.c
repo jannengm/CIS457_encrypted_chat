@@ -1,15 +1,31 @@
-//
-// Created by jannengm on 11/5/16.
-//
+/*******************************************************************************
+ * CIS 457 - Project 3: TCP Encrypted Chat Program
+ * client_list.c source code
+ * author: Mark Jannenga
+ *
+ * Implements functions declared in client_list.h
+ ******************************************************************************/
 
 #include "client_list.h"
-#include "encrypt.h"
 
+/*******************************************************************************
+ * Initializes a linked list of clients to be an empty list
+ *
+ * @param list - A pointer to the linked list struct to initialize
+ ******************************************************************************/
 void init_list(client_list_t * list){
     list->head = NULL;
     list->tail = NULL;
 }
 
+/*******************************************************************************
+ * Adds a node to the end of the linked list of clients. Updates the tail
+ * appropriately. If the list was previously empty, sets the node to be both
+ * head and tail.
+ *
+ * @param list - A pinter to the linked list of clients
+ * @param node - The node to add to the end of the list
+ ******************************************************************************/
 void push_back(client_list_t * list, client_node_t * node){
     if(list->head == NULL){
         list->head = node;
@@ -22,6 +38,13 @@ void push_back(client_list_t * list, client_node_t * node){
     }
 }
 
+/*******************************************************************************
+ * Iterates through the linked list and deallocates all dynamically allocated
+ * memory for each node, as well as closing all open file descriptors. Sets the
+ * list to be empty.
+ *
+ * @param list - A pointer to the linked list to clear
+ ******************************************************************************/
 void free_list(client_list_t * list){
     client_node_t * tmp = list->head;
     client_node_t * to_delete;
@@ -37,6 +60,14 @@ void free_list(client_list_t * list){
     list->tail = NULL;
 }
 
+/*******************************************************************************
+ * Dynamically allocates memory for a new client_node_t, and initializes its
+ * data to be equal to that of the passed client_t. Returns a pointer to the
+ * new node
+ *
+ * @param data - The data to use to initialize the node
+ * @return node - The pointer to the new node
+ ******************************************************************************/
 client_node_t * init_node(client_t * data){
     client_node_t * node = malloc( sizeof(client_node_t) );
     node->data.id = data->id;
@@ -48,6 +79,14 @@ client_node_t * init_node(client_t * data){
     return node;
 }
 
+/*******************************************************************************
+ * Iterates through a linked list of clients and returns a pointer to the first
+ * client found with an ID matching the passed id argument, else a NULL pointer.
+ *
+ * @param list - The linked list to search through
+ * @param id - The ID number to look for
+ * @return tmp - The pointer to the node with the desired ID number
+ ******************************************************************************/
 client_node_t * find_client_id(client_list_t * list, int id){
     client_node_t * tmp;
     for(tmp = list->head; tmp != NULL; tmp = tmp->next){
@@ -57,6 +96,15 @@ client_node_t * find_client_id(client_list_t * list, int id){
     return tmp;
 }
 
+/*******************************************************************************
+ * Iterates through a linked list of clients and returns a pointer to the first
+ * client found with a file descriptor matching the passed fd argument, else a
+ * NULL pointer.
+ *
+ * @param list - The linked list to search through
+ * @param fd - The file descriptor to look for
+ * @return tmp - The pointer to the node with the desired file descriptor
+ ******************************************************************************/
 client_node_t * find_client_fd(client_list_t * list, int fd){
     client_node_t * tmp;
     for(tmp = list->head; tmp != NULL; tmp = tmp->next){
@@ -66,8 +114,18 @@ client_node_t * find_client_fd(client_list_t * list, int fd){
     return tmp;
 }
 
-void send_to_target(client_list_t * list, client_t * sender,
-                    int target, const char * line){
+/*******************************************************************************
+ * Takes a message string (line), encrypts it, and sends it to the client
+ * designated by the target parameter. If the target parameter is set to
+ * BROADCAST, sends the message to all clients except the original sender.
+ *
+ * @param list - The list of clients to send messages to
+ * @param sender - The sender of the message
+ * @param target - The intended target of the message
+ * @param line - The message to encrypt and send
+ ******************************************************************************/
+void send_to_target(client_list_t * list, client_t * sender, int target,
+                    const char * line){
     unsigned char encrypt_text[LINE_SIZE];
     int encrypt_len;
     client_node_t * tmp;
@@ -75,31 +133,31 @@ void send_to_target(client_list_t * list, client_t * sender,
     for(tmp = list->head; tmp != NULL; tmp = tmp->next){
         if(tmp->data.id != sender->id &&
                 (tmp->data.id == target || target == BROADCAST) ){
-//            printf("Sending to client #%d from client #%d\n", tmp->data.id, sender->id);
-//            printf("Unencrypted message:\n%s\n", line);
             memset(encrypt_text, 0, LINE_SIZE);
-
-//            printf("Encrypting with key:\nKEY:\n");
-//            BIO_dump_fp(stdout, (const char *)tmp->data.key, KEY_LEN);
-//            printf("\n");
 
             encrypt_len = encrypt( (unsigned char*)line, (int)strlen(line),
                                    tmp->data.key, tmp->data.iv, encrypt_text);
-//            send(tmp->data.fd, &encrypt_len, sizeof(int), 0);
-//            printf("ENCRYPTED MESSAGE:\n");
-//            BIO_dump_fp(stdout, (const char *)encrypt_text, encrypt_len);
 
             send(tmp->data.fd, encrypt_text, (size_t)encrypt_len, 0);
         }
     }
 }
 
+/*******************************************************************************
+ * Removes a client, specified by the id parameter, from the list of clients,
+ * frees teh dynamically allocated memory for that client, and closes the file
+ * descriptor associataed with it. Retuns REM_SUCCESS if the removal was
+ * successful, else REM_ERROR.
+ *
+ * @param list - The list of clients
+ * @param id - The ID of the client to remove
+ * @return - REM_SUCCESS or REM_ERROR
+ ******************************************************************************/
 int disconnect_client(client_list_t * list, int id){
     client_node_t *tmp, *to_delete;
 
     /*Remove node from a one element list*/
     if(list->head->data.id == id && list->tail == list->head){
-        //close(list->head->data.fd);
         free_list(list);
         return REM_SUCCESS;
     }
@@ -138,6 +196,14 @@ int disconnect_client(client_list_t * list, int id){
     return REM_ERROR;
 }
 
+/*******************************************************************************
+ * Prints the IDs of all the coonnected clients to a formatted string using
+ * sprintf().
+ *
+ * @param list - The list of clients
+ * @param list_str - The location to store the formatted output string
+ * @param size - The size of the passed character array
+ ******************************************************************************/
 void to_string(client_list_t * list, char * list_str, size_t size){
     char line[LINE_SIZE];
     char * ptr = list_str;

@@ -1,14 +1,44 @@
 /*******************************************************************************
+ * CIS 457 - Project 3: TCP Encrypted Chat Program
+ * TCP Chat Server
+ * author: Mark Jannenga
  *
+ * This program implements an encrypted TCP chat server using the OpenSSL
+ * libcrypto library. The server maintains a linked list of connected clients
+ * with an ID number, file descriptor, an initialization vector, and a
+ * symmetric encryption key for each client. The server decrypts each message
+ * it receives using the appropriate symmetric key, re-encrypts it with the
+ * symmetric key of the intended recipient, designated at the beginning of each
+ * message with the "@[target ID]" tag, and forwards the message. Symmetric
+ * keys are created by the clients upon connection and are communicated to the
+ * server using the server's public RSA key.
+ *
+ * The server supports several administrative commands sent from clients:
+ *   !exit          -   Removes the client from the list of clients and performs
+ *                      an orderly shutdown of that client's connection.
+ *   !kill [target] -   Performs an orderly shutdown of the client designated as
+ *                      the target.
+ *   !list          -   Sends a list of all connected clients to the client that
+ *                      sent the command.
+ *   !shutdown      -   Causes the server to perform an orderly shutdown of all
+ *                      client conections and then exit.
  ******************************************************************************/
 
 #include "tcp_chat.h"
 #include "client_list.h"
 #include "encrypt.h"
 
-int handle_client( client_t *sender, client_list_t *clients, fd_set *active_set );
+/*Function Prototypes*/
+int handle_client(client_t *sender, client_list_t *clients, fd_set *active_set);
 void recv_symmetric_key(int sockfd, unsigned char *key, unsigned char *iv);
 
+/*******************************************************************************
+ * Server main method. Expects a port number as a command line argument.
+ *
+ * @param argc - The number of command line arguments
+ * @param argv - The list of command line arguments
+ * @return
+ ******************************************************************************/
 int main(int argc, char **argv){
     int sockfd, new_sock, i, num_clients = 0;
     fd_set active_set, read_set;
@@ -66,7 +96,8 @@ int main(int argc, char **argv){
                  * new socket and add to the active_set*/
                 if(i == sockfd){
                     len = sizeof(clientaddr);
-                    new_sock = accept(sockfd, (struct sockaddr*) &clientaddr, &len);
+                    new_sock = accept(sockfd, (struct sockaddr*) &clientaddr,
+                                      &len);
                     if(new_sock < 0){
                         fprintf(stderr, "Error connecting to client\n");
                         exit(1);
@@ -86,44 +117,31 @@ int main(int argc, char **argv){
                     client.fd = new_sock;
                     node = init_node(&client);
                     push_back(&client_list, node);
-
-//                    printf("Stored in client list:\n");
-//                    printf("IV:\n");
-//                    BIO_dump_fp(stdout, (const char *)client.iv, IV_LEN);
-//                    printf("\nDECRYPTED KEY:\n");
-//                    BIO_dump_fp(stdout, (const char *)client.key, KEY_LEN);
-//                    printf("\n");
                 }
 
                 /*If client is connected but not on master socket,
                  *it is ready for use*/
                 else{
-//                    client = find_client_fd(&client_list, i)->data;
                     client_node_t * sender = find_client_fd(&client_list, i);
 
-//                    printf("Retrieved in client list:\n");
-//                    printf("IV:\n");
-//                    BIO_dump_fp(stdout, (const char *)client.iv, IV_LEN);
-//                    printf("\nDECRYPTED KEY:\n");
-//                    BIO_dump_fp(stdout, (const char *)client.key, KEY_LEN);
-//                    printf("\n");
-
-                    int command = handle_client( &(sender->data), &client_list, &active_set);
+                    int command = handle_client( &(sender->data), &client_list,
+                                                 &active_set);
 
                     /*If !exit received, disconnect the client*/
                     if(command == EXIT){
                         FD_CLR(i, &active_set);
-                        int exit_code = disconnect_client(&client_list, client.id);
+                        int exit_code = disconnect_client(&client_list,
+                                                          client.id);
                         if(exit_code == REM_ERROR){
                             fprintf(stderr, "Error disconnecting client\n");
                         }
-//                        FD_CLR(i, &active_set);
                     }
 
                     /*If !shutdown received, disconnect all clients and exit*/
                     if(command == SHUTDOWN){
                         client.id = BROADCAST;
-                        send_to_target(&client_list, &client, BROADCAST, "!exit");
+                        send_to_target(&client_list, &client, BROADCAST,
+                                       "!exit");
                         free_list(&client_list);
                         FD_ZERO (&active_set);
                         exit(0);
@@ -134,55 +152,51 @@ int main(int argc, char **argv){
     }
 }
 
-int handle_client( client_t *sender, client_list_t *clients, fd_set *active_set ){
-//    static int runs;
-//    printf("handle_client call %d\n", runs++);
-//    printf("Handling packet from client #%d on socket #%d\n", sender->id, sender->fd);
-//    sleep(1);
-
-    char buffer[BUFF_SIZE], line[LINE_SIZE];
+/*******************************************************************************
+ * This function receives an encrypted message from a connected client, decrypts
+ * it and determines what type of message it was, then takes the appropriate
+ * action.
+ *
+ * @param sender - The client that sent the message
+ * @param clients - A linked list of all connected clients
+ * @param active_set - The fdset of all active file descriptors
+ * @return The return value of check_command, designating what type of message
+ *         was received. Values defined in tcp_chat.h.
+ ******************************************************************************/
+int handle_client(client_t *sender, client_list_t *clients, fd_set *active_set){
+    char buffer[LINE_SIZE], line[LINE_SIZE];
     unsigned char encrypt_text[LINE_SIZE];
-    //int buff_len, file_size;
     int command, target, to_clear, encrypt_len = 0, code;
 
-    /*SSL Initialization functions?*/
+    /*SSL Initialization functions*/
     ERR_load_crypto_strings();
     OpenSSL_add_all_algorithms();
     OPENSSL_config(NULL);
 
     /*Clear the input buffer*/
     memset(line, 0, LINE_SIZE);
-    memset(buffer, 0, BUFF_SIZE);
+    memset(buffer, 0, LINE_SIZE);
     memset(encrypt_text, 0, LINE_SIZE);
 
     /*Get encrypted message from client*/
-    //recv(sender->fd, &encrypt_len, sizeof(int), 0);
     encrypt_len = (int)recv(sender->fd, encrypt_text, LINE_SIZE, 0);
-
-//    printf("Received encrypted packet of length %d\n", encrypt_len);
-//    printf("ENCRYPTED MESSAGE:\n");
-//    BIO_dump_fp(stdout, (const char *)encrypt_text, encrypt_len);
-//    printf("\n");
-//
-//    printf("Attempting to decrypt with key:\n");
-//    BIO_dump_fp(stdout, (const char *)sender->key, KEY_LEN);
-//    sleep(5);
 
     /*Decrypt message*/
     if(encrypt_len > 0)
         decrypt(encrypt_text, encrypt_len, sender->key, sender->iv,
                 (unsigned char *)buffer);
 
-//    printf("Got from client:\n%s\n", buffer);
-
+    /*Determine what type of message was received (command or message)*/
     command = check_command(buffer, &target);
 
+    /*!exit was received. Handled in main, return EXIT*/
     if(command == EXIT){
-        //remove this client from list
         code = EXIT;
     }
+
+    /*!kill [target] was received. Send an !exit command to the specified
+     * target, then perform an orderly disconnect. Return KILL.*/
     else if(command == KILL){
-        //send !exit to specified client
         sscanf(buffer, "%s %d", line, &target);
         send_to_target(clients, sender, target, "!exit");
         to_clear = find_client_id(clients, target)->data.fd;
@@ -190,10 +204,15 @@ int handle_client( client_t *sender, client_list_t *clients, fd_set *active_set 
         FD_CLR(to_clear, active_set);
         code = KILL;
     }
+
+    /*!shutdown was received. Handled in main, return SHUTDOWN.*/
     else if(command == SHUTDOWN){
         //Disconnect all clients, shut down server
         code = SHUTDOWN;
     }
+
+    /*!list was received. Send a list of all connected clients to the
+     * sender. Return LIST*/
     else if(command == LIST){
         //send list to requesting client
         to_string(clients, line, LINE_SIZE);
@@ -203,6 +222,9 @@ int handle_client( client_t *sender, client_list_t *clients, fd_set *active_set 
         send_to_target(clients, &server, sender->id, line);
         code = LIST;
     }
+
+    /*Message with an "@[target ID]" prefix was received. Identify the target
+     * and then forward the message on. Return TARGET.*/
     else if(command == TARGET) {
         /*Remove target tag*/
         int i;
@@ -229,8 +251,20 @@ int handle_client( client_t *sender, client_list_t *clients, fd_set *active_set 
     EVP_cleanup();
     ERR_free_strings();
 
+    /*Return command code value*/
     return code;
 }
+
+/*******************************************************************************
+ * Receives an initialization vector (as plain text) and a symmetric key
+ * encypted with the server's public RSA key from the client. Decrypts the key
+ * and stores the initialization vector and symmetric key in the supplied
+ * parameters.
+ *
+ * @param sockfd - The socket to read the messages in on
+ * @param key - The location to store the decrypted symmetric key
+ * @param iv - The location to store the initialization vector
+ ******************************************************************************/
 void recv_symmetric_key(int sockfd, unsigned char *key, unsigned char *iv){
     EVP_PKEY *privkey;
     FILE* privf;
@@ -238,11 +272,12 @@ void recv_symmetric_key(int sockfd, unsigned char *key, unsigned char *iv){
     int encryptedkey_len = 0;
     unsigned char encrypted_key[ENCRYPTEDKEY_LEN];
 
-    /*SSL Initialization functions?*/
+    /*SSL Initialization functions*/
     ERR_load_crypto_strings();
     OpenSSL_add_all_algorithms();
     OPENSSL_config(NULL);
 
+    /*Read in the private RSA key from file*/
     privf = fopen(privfilename,"rb");
     if(privf == NULL){
         fprintf(stderr, "Error opening RSApriv.pem\n");
@@ -252,9 +287,6 @@ void recv_symmetric_key(int sockfd, unsigned char *key, unsigned char *iv){
 
     /*Get plain text Initialization Vector from client*/
     recv(sockfd, iv, IV_LEN, 0);
-
-    /*Get length of encrypted key*/
-//    recv(sockfd, &encryptedkey_len, sizeof(int), 0);
 
     /*Receive encrypted key*/
     encryptedkey_len = (int)recv(sockfd, encrypted_key, ENCRYPTEDKEY_LEN, 0);

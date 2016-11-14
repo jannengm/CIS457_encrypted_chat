@@ -13,10 +13,15 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4907caf3-c43f-4e15-8f4e-6b0d4008e1af" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/server" afterPath="$PROJECT_DIR$/server" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/chat_client.c" afterPath="$PROJECT_DIR$/chat_client.c" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/chat_server.c" afterPath="$PROJECT_DIR$/chat_server.c" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/client_list.c" afterPath="$PROJECT_DIR$/client_list.c" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/client_list.h" afterPath="$PROJECT_DIR$/client_list.h" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/encrypt.c" afterPath="$PROJECT_DIR$/encrypt.c" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/encrypt.h" afterPath="$PROJECT_DIR$/encrypt.h" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/tcp_chat.c" afterPath="$PROJECT_DIR$/tcp_chat.c" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/tcp_chat.h" afterPath="$PROJECT_DIR$/tcp_chat.h" />
     </list>
     <ignored path="Project_3.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -35,18 +40,77 @@
       <content type="file-editors">
         <state>
           <leaf>
-            <file leaf-file-name="client_list.c" pinned="false" current-in-tab="true">
+            <file leaf-file-name="client_list.h" pinned="false" current-in-tab="false">
+              <entry file="file://$PROJECT_DIR$/client_list.h">
+                <provider selected="true" editor-type-id="text-editor">
+                  <state relative-caret-position="540">
+                    <caret line="30" column="57" selection-start-line="30" selection-start-column="57" selection-end-line="30" selection-end-column="57" />
+                    <folding>
+                      <element signature="e#534#555#0" expanded="true" />
+                    </folding>
+                  </state>
+                </provider>
+              </entry>
+            </file>
+            <file leaf-file-name="tcp_chat.h" pinned="false" current-in-tab="false">
+              <entry file="file://$PROJECT_DIR$/tcp_chat.h">
+                <provider selected="true" editor-type-id="text-editor">
+                  <state relative-caret-position="0">
+                    <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="8" selection-end-column="80" />
+                    <folding>
+                      <element signature="e#525#544#0" expanded="true" />
+                    </folding>
+                  </state>
+                </provider>
+              </entry>
+            </file>
+            <file leaf-file-name="encrypt.h" pinned="false" current-in-tab="true">
+              <entry file="file://$PROJECT_DIR$/encrypt.h">
+                <provider selected="true" editor-type-id="text-editor">
+                  <state relative-caret-position="198">
+                    <caret line="11" column="0" selection-start-line="11" selection-start-column="0" selection-end-line="11" selection-end-column="0" />
+                    <folding />
+                  </state>
+                </provider>
+              </entry>
+            </file>
+          </leaf>
+        </state>
+      </content>
+    </window>
+    <window id="1">
+      <content type="file-editors">
+        <state>
+          <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+            <file leaf-file-name="client_list.c" pinned="false" current-in-tab="false">
               <entry file="file://$PROJECT_DIR$/client_list.c">
                 <provider selected="true" editor-type-id="text-editor">
-                  <state relative-caret-position="766">
-                    <caret line="159" column="5" selection-start-line="159" selection-start-column="5" selection-end-line="159" selection-end-column="5" />
+                  <state relative-caret-position="90">
+                    <caret line="5" column="49" selection-start-line="5" selection-start-column="49" selection-end-line="5" selection-end-column="49" />
                     <folding>
-                      <element signature="e#42#66#0" expanded="true" />
-                      <element signature="e#89#174#0" expanded="false" />
-                      <element signature="e#176#435#0" expanded="false" />
-                      <element signature="e#437#727#0" expanded="false" />
-                      <element signature="e#1052#1269#0" expanded="false" />
-                      <element signature="e#1271#1488#0" expanded="false" />
+                      <element signature="e#7264#8311#0" expanded="false" />
+                    </folding>
+                  </state>
+                </provider>
+              </entry>
+            </file>
+            <file leaf-file-name="encrypt.c" pinned="false" current-in-tab="false">
+              <entry file="file://$PROJECT_DIR$/encrypt.c">
+                <provider selected="true" editor-type-id="text-editor">
+                  <state relative-caret-position="144">
+                    <caret line="8" column="80" selection-start-line="8" selection-start-column="80" selection-end-line="8" selection-end-column="80" />
+                    <folding />
+                  </state>
+                </provider>
+              </entry>
+            </file>
+            <file leaf-file-name="tcp_chat.c" pinned="false" current-in-tab="true">
+              <entry file="file://$PROJECT_DIR$/tcp_chat.c">
+                <provider selected="true" editor-type-id="text-editor">
+                  <state relative-caret-position="90">
+                    <caret line="5" column="22" selection-start-line="5" selection-start-column="22" selection-end-line="5" selection-end-column="22" />
+                    <folding>
+                      <element signature="e#338#2876#0" expanded="false" />
                     </folding>
                   </state>
                 </provider>
@@ -62,16 +126,20 @@
     <favorites_list name="Project_3" />
   </component>
   <component name="FileEditorManager">
-    <splitter split-orientation="horizontal" split-proportion="0.5">
+    <splitter split-orientation="horizontal" split-proportion="0.5125">
       <split-first>
         <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
           <file leaf-file-name="chat_server.c" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/chat_server.c">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="-940">
-                  <caret line="137" column="22" selection-start-line="137" selection-start-column="22" selection-end-line="137" selection-end-column="22" />
+                <state relative-caret-position="428">
+                  <caret line="27" column="24" selection-start-line="27" selection-start-column="24" selection-end-line="27" selection-end-column="24" />
                   <folding>
-                    <element signature="e#166#187#0" expanded="true" />
+                    <element signature="e#1777#6247#0" expanded="false" />
+                    <element signature="e#6249#6891#0" expanded="false" />
+                    <element signature="e#6249#9683#0" expanded="false" />
+                    <element signature="e#9685#10276#0" expanded="false" />
+                    <element signature="e#9685#11638#0" expanded="false" />
                   </folding>
                 </state>
               </provider>
@@ -94,12 +162,14 @@
           <file leaf-file-name="chat_client.c" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/chat_client.c">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="216">
-                  <caret line="92" column="55" selection-start-line="92" selection-start-column="55" selection-end-line="92" selection-end-column="55" />
+                <state relative-caret-position="1224">
+                  <caret line="233" column="0" selection-start-line="233" selection-start-column="0" selection-end-line="233" selection-end-column="0" />
                   <folding>
-                    <element signature="e#42#63#0" expanded="true" />
-                    <element signature="e#5819#6161#0" expanded="false" />
-                    <element signature="e#6163#7463#0" expanded="false" />
+                    <element signature="e#1841#1862#0" expanded="true" />
+                    <element signature="e#2108#5487#0" expanded="false" />
+                    <element signature="e#5489#7575#0" expanded="false" />
+                    <element signature="e#7577#8316#0" expanded="false" />
+                    <element signature="e#8318#10037#0" expanded="false" />
                   </folding>
                 </state>
               </provider>
@@ -117,15 +187,15 @@
       <list>
         <option value="$PROJECT_DIR$/file_client.c" />
         <option value="$PROJECT_DIR$/main.cpp" />
-        <option value="$PROJECT_DIR$/tcp_chat.h" />
-        <option value="$PROJECT_DIR$/tcp_chat.c" />
-        <option value="$PROJECT_DIR$/encrypt.c" />
-        <option value="$PROJECT_DIR$/encrypt.h" />
-        <option value="$PROJECT_DIR$/client_list.h" />
         <option value="$PROJECT_DIR$/CMakeLists.txt" />
         <option value="$PROJECT_DIR$/chat_client.c" />
-        <option value="$PROJECT_DIR$/chat_server.c" />
+        <option value="$PROJECT_DIR$/tcp_chat.h" />
+        <option value="$PROJECT_DIR$/encrypt.h" />
+        <option value="$PROJECT_DIR$/encrypt.c" />
+        <option value="$PROJECT_DIR$/client_list.h" />
         <option value="$PROJECT_DIR$/client_list.c" />
+        <option value="$PROJECT_DIR$/tcp_chat.c" />
+        <option value="$PROJECT_DIR$/chat_server.c" />
       </list>
     </option>
   </component>
@@ -390,12 +460,13 @@
       <workItem from="1478473120249" duration="1069000" />
       <workItem from="1478887676939" duration="16880000" />
       <workItem from="1478921500197" duration="5767000" />
-      <workItem from="1478991574171" duration="5181000" />
+      <workItem from="1478991574171" duration="5247000" />
+      <workItem from="1479088472535" duration="9295000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="57265000" />
+    <option name="totallyTimeSpent" value="66626000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="1920" y="24" width="1920" height="1001" extended-state="6" />
@@ -454,17 +525,21 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="10" />
+      <option name="time" value="11" />
     </breakpoint-manager>
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/chat_server.c">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1620">
-          <caret line="90" column="5" selection-start-line="90" selection-start-column="5" selection-end-line="90" selection-end-column="5" />
+        <state relative-caret-position="2466">
+          <caret line="137" column="22" selection-start-line="137" selection-start-column="22" selection-end-line="137" selection-end-column="22" />
           <folding>
-            <element signature="e#166#187#0" expanded="true" />
+            <element signature="e#1777#6247#0" expanded="false" />
+            <element signature="e#6249#6891#0" expanded="false" />
+            <element signature="e#6249#9683#0" expanded="false" />
+            <element signature="e#9685#10276#0" expanded="false" />
+            <element signature="e#9685#11638#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -482,9 +557,47 @@
         <state relative-caret-position="0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <element signature="e#42#63#0" expanded="true" />
-            <element signature="e#5819#6161#0" expanded="false" />
-            <element signature="e#6163#7463#0" expanded="false" />
+            <element signature="e#1841#1862#0" expanded="true" />
+            <element signature="e#2108#5487#0" expanded="false" />
+            <element signature="e#5489#7575#0" expanded="false" />
+            <element signature="e#7577#8316#0" expanded="false" />
+            <element signature="e#8318#10037#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/chat_server.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1620">
+          <caret line="90" column="5" selection-start-line="90" selection-start-column="5" selection-end-line="90" selection-end-column="5" />
+          <folding>
+            <element signature="e#1777#6247#0" expanded="false" />
+            <element signature="e#6249#6891#0" expanded="false" />
+            <element signature="e#6249#9683#0" expanded="false" />
+            <element signature="e#9685#10276#0" expanded="false" />
+            <element signature="e#9685#11638#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/CMakeLists.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="162">
+          <caret line="9" column="53" selection-start-line="9" selection-start-column="53" selection-end-line="9" selection-end-column="53" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/chat_client.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="e#1841#1862#0" expanded="true" />
+            <element signature="e#2108#5487#0" expanded="false" />
+            <element signature="e#5489#7575#0" expanded="false" />
+            <element signature="e#7577#8316#0" expanded="false" />
+            <element signature="e#8318#10037#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -494,7 +607,11 @@
         <state relative-caret-position="2628">
           <caret line="146" column="4" selection-start-line="146" selection-start-column="4" selection-end-line="146" selection-end-column="4" />
           <folding>
-            <element signature="e#166#187#0" expanded="true" />
+            <element signature="e#1777#6247#0" expanded="false" />
+            <element signature="e#6249#6891#0" expanded="false" />
+            <element signature="e#6249#9683#0" expanded="false" />
+            <element signature="e#9685#10276#0" expanded="false" />
+            <element signature="e#9685#11638#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -512,9 +629,11 @@
         <state relative-caret-position="0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <element signature="e#42#63#0" expanded="true" />
-            <element signature="e#5819#6161#0" expanded="false" />
-            <element signature="e#6163#7463#0" expanded="false" />
+            <element signature="e#1841#1862#0" expanded="true" />
+            <element signature="e#2108#5487#0" expanded="false" />
+            <element signature="e#5489#7575#0" expanded="false" />
+            <element signature="e#7577#8316#0" expanded="false" />
+            <element signature="e#8318#10037#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -524,7 +643,11 @@
         <state relative-caret-position="1296">
           <caret line="72" column="37" selection-start-line="72" selection-start-column="37" selection-end-line="72" selection-end-column="37" />
           <folding>
-            <element signature="e#166#187#0" expanded="true" />
+            <element signature="e#1777#6247#0" expanded="false" />
+            <element signature="e#6249#6891#0" expanded="false" />
+            <element signature="e#6249#9683#0" expanded="false" />
+            <element signature="e#9685#10276#0" expanded="false" />
+            <element signature="e#9685#11638#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -542,9 +665,11 @@
         <state relative-caret-position="1224">
           <caret line="68" column="23" selection-start-line="68" selection-start-column="23" selection-end-line="68" selection-end-column="23" />
           <folding>
-            <element signature="e#42#63#0" expanded="true" />
-            <element signature="e#5819#6161#0" expanded="false" />
-            <element signature="e#6163#7463#0" expanded="false" />
+            <element signature="e#1841#1862#0" expanded="true" />
+            <element signature="e#2108#5487#0" expanded="false" />
+            <element signature="e#5489#7575#0" expanded="false" />
+            <element signature="e#7577#8316#0" expanded="false" />
+            <element signature="e#8318#10037#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -554,7 +679,11 @@
         <state relative-caret-position="1476">
           <caret line="82" column="63" selection-start-line="82" selection-start-column="63" selection-end-line="82" selection-end-column="63" />
           <folding>
-            <element signature="e#166#187#0" expanded="true" />
+            <element signature="e#1777#6247#0" expanded="false" />
+            <element signature="e#6249#6891#0" expanded="false" />
+            <element signature="e#6249#9683#0" expanded="false" />
+            <element signature="e#9685#10276#0" expanded="false" />
+            <element signature="e#9685#11638#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -572,9 +701,11 @@
         <state relative-caret-position="0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <element signature="e#42#63#0" expanded="true" />
-            <element signature="e#5819#6161#0" expanded="false" />
-            <element signature="e#6163#7463#0" expanded="false" />
+            <element signature="e#1841#1862#0" expanded="true" />
+            <element signature="e#2108#5487#0" expanded="false" />
+            <element signature="e#5489#7575#0" expanded="false" />
+            <element signature="e#7577#8316#0" expanded="false" />
+            <element signature="e#8318#10037#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -584,7 +715,11 @@
         <state relative-caret-position="378">
           <caret line="21" column="18" selection-start-line="21" selection-start-column="18" selection-end-line="21" selection-end-column="18" />
           <folding>
-            <element signature="e#166#187#0" expanded="true" />
+            <element signature="e#1777#6247#0" expanded="false" />
+            <element signature="e#6249#6891#0" expanded="false" />
+            <element signature="e#6249#9683#0" expanded="false" />
+            <element signature="e#9685#10276#0" expanded="false" />
+            <element signature="e#9685#11638#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -602,9 +737,11 @@
         <state relative-caret-position="0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <element signature="e#42#63#0" expanded="true" />
-            <element signature="e#5819#6161#0" expanded="false" />
-            <element signature="e#6163#7463#0" expanded="false" />
+            <element signature="e#1841#1862#0" expanded="true" />
+            <element signature="e#2108#5487#0" expanded="false" />
+            <element signature="e#5489#7575#0" expanded="false" />
+            <element signature="e#7577#8316#0" expanded="false" />
+            <element signature="e#8318#10037#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -614,7 +751,11 @@
         <state relative-caret-position="1440">
           <caret line="80" column="43" selection-start-line="80" selection-start-column="43" selection-end-line="80" selection-end-column="43" />
           <folding>
-            <element signature="e#166#187#0" expanded="true" />
+            <element signature="e#1777#6247#0" expanded="false" />
+            <element signature="e#6249#6891#0" expanded="false" />
+            <element signature="e#6249#9683#0" expanded="false" />
+            <element signature="e#9685#10276#0" expanded="false" />
+            <element signature="e#9685#11638#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -632,9 +773,11 @@
         <state relative-caret-position="1476">
           <caret line="82" column="0" selection-start-line="82" selection-start-column="0" selection-end-line="82" selection-end-column="0" />
           <folding>
-            <element signature="e#42#63#0" expanded="true" />
-            <element signature="e#5819#6161#0" expanded="false" />
-            <element signature="e#6163#7463#0" expanded="false" />
+            <element signature="e#1841#1862#0" expanded="true" />
+            <element signature="e#2108#5487#0" expanded="false" />
+            <element signature="e#5489#7575#0" expanded="false" />
+            <element signature="e#7577#8316#0" expanded="false" />
+            <element signature="e#8318#10037#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -644,7 +787,7 @@
         <state relative-caret-position="342">
           <caret line="19" column="0" selection-start-line="19" selection-start-column="0" selection-end-line="19" selection-end-column="0" />
           <folding>
-            <element signature="e#478#497#0" expanded="false" />
+            <element signature="e#525#544#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -661,7 +804,11 @@
         <state relative-caret-position="2502">
           <caret line="139" column="55" selection-start-line="139" selection-start-column="55" selection-end-line="139" selection-end-column="55" />
           <folding>
-            <element signature="e#166#187#0" expanded="true" />
+            <element signature="e#1777#6247#0" expanded="false" />
+            <element signature="e#6249#6891#0" expanded="false" />
+            <element signature="e#6249#9683#0" expanded="false" />
+            <element signature="e#9685#10276#0" expanded="false" />
+            <element signature="e#9685#11638#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -671,9 +818,11 @@
         <state relative-caret-position="0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <element signature="e#42#63#0" expanded="true" />
-            <element signature="e#5819#6161#0" expanded="false" />
-            <element signature="e#6163#7463#0" expanded="false" />
+            <element signature="e#1841#1862#0" expanded="true" />
+            <element signature="e#2108#5487#0" expanded="false" />
+            <element signature="e#5489#7575#0" expanded="false" />
+            <element signature="e#7577#8316#0" expanded="false" />
+            <element signature="e#8318#10037#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -683,7 +832,11 @@
         <state relative-caret-position="2466">
           <caret line="137" column="8" selection-start-line="137" selection-start-column="8" selection-end-line="137" selection-end-column="8" />
           <folding>
-            <element signature="e#166#187#0" expanded="true" />
+            <element signature="e#1777#6247#0" expanded="false" />
+            <element signature="e#6249#6891#0" expanded="false" />
+            <element signature="e#6249#9683#0" expanded="false" />
+            <element signature="e#9685#10276#0" expanded="false" />
+            <element signature="e#9685#11638#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -693,9 +846,11 @@
         <state relative-caret-position="0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <element signature="e#42#63#0" expanded="true" />
-            <element signature="e#5819#6161#0" expanded="false" />
-            <element signature="e#6163#7463#0" expanded="false" />
+            <element signature="e#1841#1862#0" expanded="true" />
+            <element signature="e#2108#5487#0" expanded="false" />
+            <element signature="e#5489#7575#0" expanded="false" />
+            <element signature="e#7577#8316#0" expanded="false" />
+            <element signature="e#8318#10037#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -712,7 +867,11 @@
         <state relative-caret-position="1908">
           <caret line="106" column="22" selection-start-line="106" selection-start-column="22" selection-end-line="110" selection-end-column="0" />
           <folding>
-            <element signature="e#166#187#0" expanded="true" />
+            <element signature="e#1777#6247#0" expanded="false" />
+            <element signature="e#6249#6891#0" expanded="false" />
+            <element signature="e#6249#9683#0" expanded="false" />
+            <element signature="e#9685#10276#0" expanded="false" />
+            <element signature="e#9685#11638#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -722,9 +881,11 @@
         <state relative-caret-position="0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <element signature="e#42#63#0" expanded="true" />
-            <element signature="e#5819#6161#0" expanded="false" />
-            <element signature="e#6163#7463#0" expanded="false" />
+            <element signature="e#1841#1862#0" expanded="true" />
+            <element signature="e#2108#5487#0" expanded="false" />
+            <element signature="e#5489#7575#0" expanded="false" />
+            <element signature="e#7577#8316#0" expanded="false" />
+            <element signature="e#8318#10037#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -734,9 +895,11 @@
         <state relative-caret-position="1008">
           <caret line="56" column="16" selection-start-line="56" selection-start-column="16" selection-end-line="56" selection-end-column="16" />
           <folding>
-            <element signature="e#42#63#0" expanded="true" />
-            <element signature="e#5819#6161#0" expanded="false" />
-            <element signature="e#6163#7463#0" expanded="false" />
+            <element signature="e#1841#1862#0" expanded="true" />
+            <element signature="e#2108#5487#0" expanded="false" />
+            <element signature="e#5489#7575#0" expanded="false" />
+            <element signature="e#7577#8316#0" expanded="false" />
+            <element signature="e#8318#10037#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -746,7 +909,11 @@
         <state relative-caret-position="0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <element signature="e#166#187#0" expanded="true" />
+            <element signature="e#1777#6247#0" expanded="false" />
+            <element signature="e#6249#6891#0" expanded="false" />
+            <element signature="e#6249#9683#0" expanded="false" />
+            <element signature="e#9685#10276#0" expanded="false" />
+            <element signature="e#9685#11638#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -763,9 +930,11 @@
         <state relative-caret-position="0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <element signature="e#42#63#0" expanded="true" />
-            <element signature="e#5819#6161#0" expanded="false" />
-            <element signature="e#6163#7463#0" expanded="false" />
+            <element signature="e#1841#1862#0" expanded="true" />
+            <element signature="e#2108#5487#0" expanded="false" />
+            <element signature="e#5489#7575#0" expanded="false" />
+            <element signature="e#7577#8316#0" expanded="false" />
+            <element signature="e#8318#10037#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -775,7 +944,11 @@
         <state relative-caret-position="594">
           <caret line="33" column="6" selection-start-line="33" selection-start-column="6" selection-end-line="33" selection-end-column="6" />
           <folding>
-            <element signature="e#166#187#0" expanded="true" />
+            <element signature="e#1777#6247#0" expanded="false" />
+            <element signature="e#6249#6891#0" expanded="false" />
+            <element signature="e#6249#9683#0" expanded="false" />
+            <element signature="e#9685#10276#0" expanded="false" />
+            <element signature="e#9685#11638#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -794,89 +967,87 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/tcp_chat.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="882">
-          <caret line="49" column="26" selection-start-line="49" selection-start-column="26" selection-end-line="49" selection-end-column="26" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tcp_chat.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="126">
-          <caret line="7" column="19" selection-start-line="7" selection-start-column="19" selection-end-line="7" selection-end-column="21" />
-          <folding>
-            <element signature="e#478#497#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/encrypt.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="306">
-          <caret line="17" column="8" selection-start-line="17" selection-start-column="8" selection-end-line="17" selection-end-column="24" />
-          <folding>
-            <element signature="e#124#149#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/encrypt.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="138">
-          <caret line="49" column="52" selection-start-line="49" selection-start-column="52" selection-end-line="49" selection-end-column="52" />
-          <folding>
-            <element signature="e#65#138#0" expanded="false" />
-            <element signature="e#140#701#0" expanded="false" />
-            <element signature="e#703#1276#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/client_list.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="660">
-          <caret line="48" column="51" selection-start-line="48" selection-start-column="51" selection-end-line="48" selection-end-column="51" />
-          <folding>
-            <element signature="e#297#318#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/chat_client.c">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="216">
-          <caret line="92" column="55" selection-start-line="92" selection-start-column="55" selection-end-line="92" selection-end-column="55" />
+        <state relative-caret-position="1224">
+          <caret line="233" column="0" selection-start-line="233" selection-start-column="0" selection-end-line="233" selection-end-column="0" />
           <folding>
-            <element signature="e#42#63#0" expanded="true" />
-            <element signature="e#5819#6161#0" expanded="false" />
-            <element signature="e#6163#7463#0" expanded="false" />
+            <element signature="e#1841#1862#0" expanded="true" />
+            <element signature="e#2108#5487#0" expanded="false" />
+            <element signature="e#5489#7575#0" expanded="false" />
+            <element signature="e#7577#8316#0" expanded="false" />
+            <element signature="e#8318#10037#0" expanded="false" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/chat_server.c">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-940">
-          <caret line="137" column="22" selection-start-line="137" selection-start-column="22" selection-end-line="137" selection-end-column="22" />
+        <state relative-caret-position="428">
+          <caret line="27" column="24" selection-start-line="27" selection-start-column="24" selection-end-line="27" selection-end-column="24" />
           <folding>
-            <element signature="e#166#187#0" expanded="true" />
+            <element signature="e#1777#6247#0" expanded="false" />
+            <element signature="e#6249#6891#0" expanded="false" />
+            <element signature="e#6249#9683#0" expanded="false" />
+            <element signature="e#9685#10276#0" expanded="false" />
+            <element signature="e#9685#11638#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/client_list.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="540">
+          <caret line="30" column="57" selection-start-line="30" selection-start-column="57" selection-end-line="30" selection-end-column="57" />
+          <folding>
+            <element signature="e#534#555#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/client_list.c">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="766">
-          <caret line="159" column="5" selection-start-line="159" selection-start-column="5" selection-end-line="159" selection-end-column="5" />
+        <state relative-caret-position="90">
+          <caret line="5" column="49" selection-start-line="5" selection-start-column="49" selection-end-line="5" selection-end-column="49" />
           <folding>
-            <element signature="e#42#66#0" expanded="true" />
-            <element signature="e#89#174#0" expanded="false" />
-            <element signature="e#176#435#0" expanded="false" />
-            <element signature="e#437#727#0" expanded="false" />
-            <element signature="e#1052#1269#0" expanded="false" />
-            <element signature="e#1271#1488#0" expanded="false" />
+            <element signature="e#7264#8311#0" expanded="false" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/encrypt.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="144">
+          <caret line="8" column="80" selection-start-line="8" selection-start-column="80" selection-end-line="8" selection-end-column="80" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tcp_chat.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="90">
+          <caret line="5" column="22" selection-start-line="5" selection-start-column="22" selection-end-line="5" selection-end-column="22" />
+          <folding>
+            <element signature="e#338#2876#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tcp_chat.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="8" selection-end-column="80" />
+          <folding>
+            <element signature="e#525#544#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/encrypt.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="198">
+          <caret line="11" column="0" selection-start-line="11" selection-start-column="0" selection-end-line="11" selection-end-column="0" />
+          <folding />
         </state>
       </provider>
     </entry>

@@ -1,15 +1,51 @@
-//
-// Created by jannengm on 11/3/16.
-//
+/*******************************************************************************
+ * CIS 457 - Project 3: TCP Encrypted Chat Program
+ * TCP Chat Server
+ * author: Mark Jannenga
+ *
+ * This program implements an encrypted TCP chat client using the OpenSSL
+ * libcrypto library. Upon connection to the server, the client randomly
+ * generates a symmetric key, encrypts it with the server's RSA public key, and
+ * sends it to the server. The client creates seperate threads to handle user
+ * input and to receive messages from the client. The client takes user input
+ * from stdin, encrypts it with the symmetric key, then sends it to the server.
+ * The client receives encrypted messages from the server, decrypts them with
+ * the symmetric key, and prints them to stdout.
+ *
+ * The server supports several administrative commands sent from clients:
+ *   !exit          -   Removes the client from the list of clients and performs
+ *                      an orderly shutdown of that client's connection.
+ *   !kill [target] -   Performs an orderly shutdown of the client designated as
+ *                      the target.
+ *   !list          -   Sends a list of all connected clients to the client that
+ *                      sent the command.
+ *   !shutdown      -   Causes the server to perform an orderly shutdown of all
+ *                      client conections and then exit.
+ *
+ * The client sends messages to all other connected clients by default. To
+ * specify a particular client to message, @[target ID] is entered as a prefix
+ * to the message. The client remembers what the last target was and continues
+ * sending messages to that target until a new target is given. To go back to
+ * broadcasting to all clients, @all or @-1 is entered as a prefix.
+ ******************************************************************************/
 
 #include "tcp_chat.h"
 #include "encrypt.h"
 #include "client_list.h"
 
+/*Function prototypes*/
 void * get_input (void * arg);
 void create_symmetric_key(unsigned char *key, unsigned char *iv);
 void send_symmetric_key(int sockfd, unsigned char *key, unsigned char *iv);
 
+/*******************************************************************************
+ * Client main method. Expects a port number and the IPv4 address of the server
+ * as command line arguments.
+ *
+ * @param argc - The number of command line arguments
+ * @param argv - The list of command line arguments
+ * @return
+ ******************************************************************************/
 int main( int argc, char * argv[] ) {
     char msg[LINE_SIZE];
     unsigned char encrypt_text[LINE_SIZE];
@@ -48,7 +84,7 @@ int main( int argc, char * argv[] ) {
     /*Receive assigned Client ID number from server*/
     recv(client.fd, &(client.id), sizeof(int), 0);
 
-    /*Create new symmetric key and send to the server*/
+    /*Create new symmetric key*/
     create_symmetric_key(client.key, client.iv);
 
     /*Print key debug information to stdout*/
@@ -58,8 +94,10 @@ int main( int argc, char * argv[] ) {
     BIO_dump_fp(stdout, (const char *)client.iv, IV_LEN);
     printf("\n");
 
+    /*Send the symmetric key to the server*/
     send_symmetric_key(client.fd, client.key, client.iv);
 
+    /*Create child thread to handle user input*/
     if( pthread_create(&child, NULL, get_input, &client) != 0) {
         printf("Failed to create thread\n");
         return 1;
@@ -67,27 +105,19 @@ int main( int argc, char * argv[] ) {
     pthread_detach(child);
 
     while(1){
+        /*Clear buffers*/
         memset(msg, 0, LINE_SIZE);
         memset(encrypt_text, 0, LINE_SIZE);
 
-
-//        printf()
         /*Get message from server*/
-//        recv(client.fd, &encrypt_len, sizeof(int), 0);
-//        recv(client.fd, encrypt_text, encrypt_len, 0);
         encrypt_len = (int)recv(client.fd, encrypt_text, LINE_SIZE, 0);
-
-//        printf("Received encrypted packet of length %d\n", encrypt_len);
-//        printf("ENCRYPTED MESSAGE:\n");
-//        BIO_dump_fp(stdout, (const char *)encrypt_text, encrypt_len);
-//        printf("\n");
 
         /*Decrypt message*/
         if(encrypt_len > 0) {
             decrypt_len = decrypt(encrypt_text, encrypt_len, client.key, client.iv,
                                   (unsigned char *) msg);
-//            printf("\n%s", msg);
-            /*There are some garbage characters at the end of the decrypted message*/
+
+            /*Remove garbage characters at the end of the decrypted message*/
             int i;
             for(i = 0; i < strlen(msg); i++){
                 if( !isprint( msg[i] ) && msg[i] != '\n' ){
@@ -95,8 +125,6 @@ int main( int argc, char * argv[] ) {
                     break;
                 }
             }
-//            printf("Decrypted message length: %d\n", decrypt_len);
-//            msg[decrypt_len] = '\0';
         }
         else{
             printf("\nReceived zero length packet\n");
@@ -118,6 +146,14 @@ int main( int argc, char * argv[] ) {
     }
 }
 
+/*******************************************************************************
+ * Gets user input from stdin, encrypts it using the symmetric key, then sends
+ * the encrypted message to the server.
+ *
+ * @param arg - A client_t struct containing the key, initialization vector,
+ *              client ID, and file descriptor
+ * @return
+ ******************************************************************************/
 void * get_input (void * arg){
     client_t client = *(client_t *)arg;
     int target = -1, encrypt_len;
@@ -144,7 +180,6 @@ void * get_input (void * arg){
 
         /*If no target specified, add current target*/
         if(command == NO_CODE){
-            //Could cause buffer overflow, fix later
             snprintf(to_send, LINE_SIZE, "@%d %s", target, buffer);
         }
         else{
@@ -155,21 +190,8 @@ void * get_input (void * arg){
         encrypt_len = encrypt( (unsigned char *)to_send, strlen(to_send),
                                client.key, client.iv, encrypt_text);
 
-        /*Display encrypted message*/
-//        printf("SENDING ENCRYPTED MESSAGE:\n");
-//        BIO_dump_fp(stdout, (const char *)encrypt_text, encrypt_len);
-//        printf("\n");
-
-        /*Send size of encrypted message*/
-//        send(client.fd, &encrypt_len, sizeof(int), 0);
-
         /*Send encrypted message*/
         send(client.fd, encrypt_text, encrypt_len, 0);
-
-        /*Decrypt message and output*/
-//        memset(buffer, 0, LINE_SIZE);
-//        decrypt(encrypt_text, encrypt_len, client.key, client.iv, (unsigned char *)buffer);
-//        printf("Decrypted message:\n%s\n", buffer);
 
         /*If command is !exit, disconnect*/
         if(command == EXIT){
@@ -182,10 +204,20 @@ void * get_input (void * arg){
         memset(buffer, 0, LINE_SIZE);
         memset(to_send, 0, LINE_SIZE);
     }
+
+    /*Once !exit is received or entered, break close the file descriptor
+     * and exit*/
     close(client.fd);
     exit(0);
 }
 
+/*******************************************************************************
+ * Randomly generates an initialization vector and a symmetric key, then stores
+ * them in the passed parameters
+ *
+ * @param key - The location to store the symmetric key
+ * @param iv - The location to store the initialization vector
+ ******************************************************************************/
 void create_symmetric_key(unsigned char *key, unsigned char *iv){
     ERR_load_crypto_strings();
     OpenSSL_add_all_algorithms();
@@ -200,7 +232,16 @@ void create_symmetric_key(unsigned char *key, unsigned char *iv){
     ERR_free_strings();
 }
 
-/*Create symmetric key, encrypt with public key, and send to server*/
+/*******************************************************************************
+ * Takes a symmetric key and initialization vector as arguments, sends the
+ * initialization vector as plain text to the server using the sockfd file
+ * descriptor, encrypts the key using the server's RSA public key, then sends
+ * the encrypted key.
+ *
+ * @param sockfd - The server socket to send messages to
+ * @param key - The symmetric key to encrypt and send
+ * @param iv - The initialization vector to send as plain text
+ ******************************************************************************/
 void send_symmetric_key(int sockfd, unsigned char *key, unsigned char *iv){
     int encryptedkey_len = 0;
     EVP_PKEY *pubkey;
@@ -231,9 +272,6 @@ void send_symmetric_key(int sockfd, unsigned char *key, unsigned char *iv){
 
     /*Send plain text Initialization Vector*/
     send(sockfd, iv, IV_LEN, 0);
-
-    /*Tell server length of encrypted key*/
-//    send(sockfd, &encryptedkey_len, sizeof(int), 0);
 
     /*Send encrypted symmetric key*/
     send(sockfd, encrypted_key, ENCRYPTEDKEY_LEN, 0);

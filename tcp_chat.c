@@ -1,9 +1,25 @@
-//
-// Created by jannengm on 11/4/16.
-//
+/*******************************************************************************
+ * CIS 457 - Project 3: TCP Encrypted Chat Program
+ * tcp_chat.c source code
+ * author: Mark Jannenga
+ *
+ * Implements functions declared in tcp_chat.h
+ ******************************************************************************/
 
 #include "tcp_chat.h"
 
+/*******************************************************************************
+ * Checks for command or target tags at the beginning of a message. If the
+ * message begins with '!', checks to see which command it is, and returns the
+ * appropriate command code. If no valid code is found, returns INVALID_CODE.
+ * If the message begins with '@', checks for a target. If a valid target is
+ * found, sets the value oof the target parameter appropriately, else returns
+ * INVALID_TARGET.
+ *
+ * @param msg - The message string to check
+ * @param target - The location to store the target if there is one
+ * @return The appropriate command code or error code.
+ ******************************************************************************/
 int check_command(char * msg, int * target){
 
     /*Check target to prevent segfaults when not needed*/
@@ -36,7 +52,7 @@ int check_command(char * msg, int * target){
         }
     }
 
-        /*If message starts with '@' set target*/
+    /*If message starts with '@' set target*/
     else if(msg[0] == '@'){
         if( strncmp(msg, "@all", 4) == 0 ){
             msg[1] = '-';
@@ -60,26 +76,9 @@ int check_command(char * msg, int * target){
             *target = tmp;
             return TARGET;
         }
-//        char target_id[MAX_ID_LEN];
-//        int i, j = 0;
-//        for(i = 1; i < MAX_ID_LEN; i++){
-//            if( isdigit(msg[i]) ){
-//                target_id[j++] = msg[i];
-//            }
-//        }
-//        if(j <= 0){
-//            //Invalid target
-//            fprintf(stderr, "Invalid target. Syntax is:\n");
-//            fprintf(stderr, "@[target id #] or @all\n");
-//            return INVALID_TARGET;
-//        }
-//        else{
-//            *target = atoi(target_id);
-//            return TARGET;
-//        }
     }
 
-        /*Else there is no command, only text*/
+    /*Else there is no command, only text*/
     else{
         return NO_CODE;
     }

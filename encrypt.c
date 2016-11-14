@@ -1,15 +1,34 @@
-//
-// Created by jannengm on 11/11/16.
-//
+/*******************************************************************************
+ * CIS 457 - Project 3: TCP Encrypted Chat Program
+ * encrypt.c source code
+ * author: Mark Jannenga
+ *
+ * Implements functions declared in encrypt.h. The majority of the code was
+ * provided by the instructor, Prof. Andrew Kalafut, whcih in turn was copied
+ * heavily from the OpenSSL wiki and man pages.
+ ******************************************************************************/
 
 #include "encrypt.h"
 
+/*******************************************************************************
+ * Handles errors generated in the encryption and decryption functions defined
+ * below.
+ ******************************************************************************/
 void handleErrors(void)
 {
     ERR_print_errors_fp(stderr);
     abort();
 }
 
+/*******************************************************************************
+ * Encrypts a message using an asymmetric RSA public key
+ *
+ * @param in - The message to be encrypted
+ * @param inlen - The size of the message to be encrypted
+ * @param key - The RSA public key to use to encrypt the message
+ * @param out - The unsigned character array to store the encrypted message in
+ * @return outlen - The length of the encrypted character array
+ ******************************************************************************/
 int rsa_encrypt(unsigned char* in, size_t inlen, EVP_PKEY *key, unsigned char* out){
     EVP_PKEY_CTX *ctx;
     size_t outlen;
@@ -27,6 +46,15 @@ int rsa_encrypt(unsigned char* in, size_t inlen, EVP_PKEY *key, unsigned char* o
     return (int)outlen;
 }
 
+/*******************************************************************************
+ * Decrypts an asymmetrically encrypted message using an RSA private key.
+ *
+ * @param in - The encrypted message
+ * @param inlen - The length of the encrypted message
+ * @param key - The RSA private key to use to decrypt the message
+ * @param out - The character array to store the decrypted message in
+ * @return outlen - The length of the decrypted message
+ ******************************************************************************/
 int rsa_decrypt(unsigned char* in, size_t inlen, EVP_PKEY *key, unsigned char* out){
     EVP_PKEY_CTX *ctx;
     size_t outlen;
@@ -44,13 +72,16 @@ int rsa_decrypt(unsigned char* in, size_t inlen, EVP_PKEY *key, unsigned char* o
     return (int)outlen;
 }
 
-/*plaintext - text to be encrypted
- *plaintext_len - length of message to be ecnrypted
- *key - encryption key
- *iv - Initialization Vector, another input to encrypt and decrypt functions
-		Should be new for every new symmetric encryption key. Can send
-		as plain text
- *ciphertext - the encrypted output*/
+/*******************************************************************************
+ * Encrypts a message using a symmetric key and an initialization vector
+ *
+ * @param plaintext - The message to be encrypted
+ * @param plaintext_len - The length of the message
+ * @param key - The symmetric key to use to encrypt the message
+ * @param iv - The initialization vector
+ * @param ciphertext - The location to store the encrypted message
+ * @return ciphertext_len - The length of the encrypted message
+ ******************************************************************************/
 int encrypt(unsigned char *plaintext, int plaintext_len, unsigned char *key,
             unsigned char *iv, unsigned char *ciphertext){
     EVP_CIPHER_CTX *ctx;
@@ -68,6 +99,16 @@ int encrypt(unsigned char *plaintext, int plaintext_len, unsigned char *key,
     return ciphertext_len;
 }
 
+/*******************************************************************************
+ * Decrypts a symmetrically encrypted message
+ *
+ * @param ciphertext - The encrypted message
+ * @param ciphertext_len - The length of the encrypted message
+ * @param key - The symmetric key to use to decrypt the message
+ * @param iv - The initialization vector
+ * @param plaintext - The location to store the decrypted message
+ * @return plaintext_len - The length of the decrypted message
+ ******************************************************************************/
 int decrypt(unsigned char *ciphertext, int ciphertext_len, unsigned char *key,
             unsigned char *iv, unsigned char *plaintext){
     EVP_CIPHER_CTX *ctx;
