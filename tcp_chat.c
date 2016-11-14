@@ -13,7 +13,7 @@
  * message begins with '!', checks to see which command it is, and returns the
  * appropriate command code. If no valid code is found, returns INVALID_CODE.
  * If the message begins with '@', checks for a target. If a valid target is
- * found, sets the value oof the target parameter appropriately, else returns
+ * found, sets the value of the target parameter appropriately, else returns
  * INVALID_TARGET.
  *
  * @param msg - The message string to check

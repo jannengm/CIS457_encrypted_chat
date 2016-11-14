@@ -21,7 +21,7 @@ void handleErrors(void)
 }
 
 /*******************************************************************************
- * Encrypts a message using an asymmetric RSA public key
+ * Encrypts a message using an asymmetric RSA public key.
  *
  * @param in - The message to be encrypted
  * @param inlen - The size of the message to be encrypted
@@ -73,7 +73,7 @@ int rsa_decrypt(unsigned char* in, size_t inlen, EVP_PKEY *key, unsigned char* o
 }
 
 /*******************************************************************************
- * Encrypts a message using a symmetric key and an initialization vector
+ * Encrypts a message using a symmetric key and an initialization vector.
  *
  * @param plaintext - The message to be encrypted
  * @param plaintext_len - The length of the message
@@ -100,7 +100,7 @@ int encrypt(unsigned char *plaintext, int plaintext_len, unsigned char *key,
 }
 
 /*******************************************************************************
- * Decrypts a symmetrically encrypted message
+ * Decrypts a symmetrically encrypted message.
  *
  * @param ciphertext - The encrypted message
  * @param ciphertext_len - The length of the encrypted message

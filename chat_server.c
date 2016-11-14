@@ -160,17 +160,16 @@ int main(int argc, char **argv){
  * @param sender - The client that sent the message
  * @param clients - A linked list of all connected clients
  * @param active_set - The fdset of all active file descriptors
- * @return The return value of check_command, designating what type of message
- *         was received. Values defined in tcp_chat.h.
+ * @return code - The return value of check_command, designating what type of
+ *                message was received. Values defined in tcp_chat.h.
  ******************************************************************************/
 int handle_client(client_t *sender, client_list_t *clients, fd_set *active_set){
     char buffer[LINE_SIZE], line[LINE_SIZE];
     unsigned char encrypt_text[LINE_SIZE];
     int command, target, to_clear, encrypt_len = 0, code;
 
-    /*Set up client_t for server. Initialize to be the same as the sender.
-     * Messages that are a reply from the server to a client cannot have
-     * the same ID as the initial client*/
+    /*Set up client_t for server. Messages that are a reply from the server to
+     * a client cannot have the same sender ID as the client*/
     client_t server;
     server.id = BROADCAST;
 
@@ -213,14 +212,12 @@ int handle_client(client_t *sender, client_list_t *clients, fd_set *active_set){
 
     /*!shutdown was received. Handled in main, return SHUTDOWN.*/
     else if(command == SHUTDOWN){
-        //Disconnect all clients, shut down server
         code = SHUTDOWN;
     }
 
     /*!list was received. Send a list of all connected clients to the
      * sender. Return LIST*/
     else if(command == LIST){
-        //send list to requesting client
         to_string(clients, line, LINE_SIZE);
         send_to_target(clients, &server, sender->id, line);
         code = LIST;
@@ -250,7 +247,7 @@ int handle_client(client_t *sender, client_list_t *clients, fd_set *active_set){
         code = NO_CODE;
     }
 
-    /*SSL Cleanup functions?*/
+    /*SSL Cleanup functions*/
     EVP_cleanup();
     ERR_free_strings();
 

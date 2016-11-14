@@ -6,7 +6,7 @@
  * This program implements an encrypted TCP chat client using the OpenSSL
  * libcrypto library. Upon connection to the server, the client randomly
  * generates a symmetric key, encrypts it with the server's RSA public key, and
- * sends it to the server. The client creates seperate threads to handle user
+ * sends it to the server. The client creates separate threads to handle user
  * input and to receive messages from the client. The client takes user input
  * from stdin, encrypts it with the symmetric key, then sends it to the server.
  * The client receives encrypted messages from the server, decrypts them with
@@ -49,7 +49,7 @@ void send_symmetric_key(int sockfd, unsigned char *key, unsigned char *iv);
 int main( int argc, char * argv[] ) {
     char msg[LINE_SIZE];
     unsigned char encrypt_text[LINE_SIZE];
-    int err, encrypt_len, decrypt_len;
+    int err, encrypt_len;
     struct sockaddr_in serveraddr;
     pthread_t child;
     client_t client;

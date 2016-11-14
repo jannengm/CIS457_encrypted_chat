@@ -23,7 +23,7 @@ void init_list(client_list_t * list){
  * appropriately. If the list was previously empty, sets the node to be both
  * head and tail.
  *
- * @param list - A pinter to the linked list of clients
+ * @param list - A pointer to the linked list of clients
  * @param node - The node to add to the end of the list
  ******************************************************************************/
 void push_back(client_list_t * list, client_node_t * node){
@@ -63,7 +63,7 @@ void free_list(client_list_t * list){
 /*******************************************************************************
  * Dynamically allocates memory for a new client_node_t, and initializes its
  * data to be equal to that of the passed client_t. Returns a pointer to the
- * new node
+ * new node.
  *
  * @param data - The data to use to initialize the node
  * @return node - The pointer to the new node
@@ -145,8 +145,8 @@ void send_to_target(client_list_t * list, client_t * sender, int target,
 
 /*******************************************************************************
  * Removes a client, specified by the id parameter, from the list of clients,
- * frees teh dynamically allocated memory for that client, and closes the file
- * descriptor associataed with it. Retuns REM_SUCCESS if the removal was
+ * frees the dynamically allocated memory for that client, and closes the file
+ * descriptor associated with it. Retuns REM_SUCCESS if the removal was
  * successful, else REM_ERROR.
  *
  * @param list - The list of clients
@@ -197,7 +197,7 @@ int disconnect_client(client_list_t * list, int id){
 }
 
 /*******************************************************************************
- * Prints the IDs of all the coonnected clients to a formatted string using
+ * Prints the IDs of all the connected clients to a formatted string using
  * sprintf().
  *
  * @param list - The list of clients
