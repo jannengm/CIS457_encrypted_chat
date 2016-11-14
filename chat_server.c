@@ -21,7 +21,7 @@
  *   !list          -   Sends a list of all connected clients to the client that
  *                      sent the command.
  *   !shutdown      -   Causes the server to perform an orderly shutdown of all
- *                      client conections and then exit.
+ *                      client connections and then exit.
  ******************************************************************************/
 
 #include "tcp_chat.h"
@@ -168,6 +168,12 @@ int handle_client(client_t *sender, client_list_t *clients, fd_set *active_set){
     unsigned char encrypt_text[LINE_SIZE];
     int command, target, to_clear, encrypt_len = 0, code;
 
+    /*Set up client_t for server. Initialize to be the same as the sender.
+     * Messages that are a reply from the server to a client cannot have
+     * the same ID as the initial client*/
+    client_t server;
+    server.id = BROADCAST;
+
     /*SSL Initialization functions*/
     ERR_load_crypto_strings();
     OpenSSL_add_all_algorithms();
@@ -198,7 +204,7 @@ int handle_client(client_t *sender, client_list_t *clients, fd_set *active_set){
      * target, then perform an orderly disconnect. Return KILL.*/
     else if(command == KILL){
         sscanf(buffer, "%s %d", line, &target);
-        send_to_target(clients, sender, target, "!exit");
+        send_to_target(clients, &server, target, "!exit");
         to_clear = find_client_id(clients, target)->data.fd;
         disconnect_client(clients, target);
         FD_CLR(to_clear, active_set);
@@ -216,9 +222,6 @@ int handle_client(client_t *sender, client_list_t *clients, fd_set *active_set){
     else if(command == LIST){
         //send list to requesting client
         to_string(clients, line, LINE_SIZE);
-        client_t server;
-        memcpy(&server, sender, sizeof(client_t));
-        server.id = BROADCAST;
         send_to_target(clients, &server, sender->id, line);
         code = LIST;
     }

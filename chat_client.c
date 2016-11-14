@@ -20,7 +20,7 @@
  *   !list          -   Sends a list of all connected clients to the client that
  *                      sent the command.
  *   !shutdown      -   Causes the server to perform an orderly shutdown of all
- *                      client conections and then exit.
+ *                      client connections and then exit.
  *
  * The client sends messages to all other connected clients by default. To
  * specify a particular client to message, @[target ID] is entered as a prefix
