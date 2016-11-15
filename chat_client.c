@@ -114,7 +114,7 @@ int main( int argc, char * argv[] ) {
 
         /*Decrypt message*/
         if(encrypt_len > 0) {
-            decrypt_len = decrypt(encrypt_text, encrypt_len, client.key, client.iv,
+            decrypt(encrypt_text, encrypt_len, client.key, client.iv,
                                   (unsigned char *) msg);
 
             /*Remove garbage characters at the end of the decrypted message*/
